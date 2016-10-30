@@ -1,0 +1,20 @@
+{
+  "name": "pubsub.js",
+  "version": "0.1.0",
+  "homepage": "https://github.com/federico-lox/pubsub.js",
+  "authors": [
+    "Federico \"Lox\" Lucignano <federico.lox@gmail.com>"
+  ],
+  "description": "A tiny (~600 bytes when minified, ~300 bytes when gzip'd) and robust pubsub implementation in the spirit of microjs.com",
+  "main": "src/pubsub.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "pubsub",
+    "microjs"
+  ],
+  "license": "MIT"
+}

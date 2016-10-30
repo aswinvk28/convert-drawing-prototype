@@ -1,0 +1,108 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 15-Aug-2016, 09:57:08
+    Author     : Aswin
+*/
+
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+canvas#document:hover, #marker:hover {
+    cursor: none;
+}
+
+canvas#document {
+    z-index: 99999;
+}
+
+canvas.pull-left {
+    float: left;
+}
+
+.absolute {
+    position: absolute;
+}
+
+#menubar {
+    z-index: 9999;
+}
+
+#page_body {
+    height: 100%;
+    cursor: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+div.grid-column {
+    padding-left: 0;
+    padding-right: 0;
+    background-color: transparent;
+}
+
+canvas.grid-canvas {
+    padding-left: 0;
+    padding-right: 0;
+    background-color: transparent;
+}
+
+div.grid-column#column-grid-1_1 {
+    background-color: #fff;
+    z-index: 999;
+}
+canvas.grid-canvas#canvas-grid-1_1 { // UI
+    z-index: 999;
+}
+div.grid-column#column-grid-1_2 {
+    background-color: #fff;
+    z-index: 900;
+}
+canvas.grid-canvas#canvas-grid-1_2 { // metadata
+    z-index: 900;
+}
+div.grid-column#column-grid-1_3 {
+    background-color: #fff;
+    z-index: 800;
+}
+canvas.grid-canvas#canvas-grid-1_3 { // document
+    z-index: 800;
+}
+div.grid-column#column-grid-2_1 {
+    background-color: #fff;
+    z-index: 500;
+}
+canvas.grid-canvas#canvas-grid-2_1 { // export
+    z-index: 500;
+}
+div.grid-column#column-grid-2_2 {
+    background-color: #fff;
+    z-index: 700;
+}
+canvas.grid-canvas#canvas-grid-2_2 { // space
+    z-index: 700;
+}
+div.grid-column#column-grid-2_3 { // temp
+    background-color: #fff;
+    z-index: 400;
+}
+canvas.grid-canvas#canvas-grid-2_3 {
+    z-index: 400;
+}
