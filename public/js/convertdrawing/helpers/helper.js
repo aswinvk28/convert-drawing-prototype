@@ -21,7 +21,9 @@ var _DOCUMENT = _DOCUMENT || {};
         ACTIVITY_TYPE: '',
         ACTIVITY_METHOD: '',
         ACTIVITY_OPERATION: '',
-        ACTIVITY_CONTEXT: this,
+        ACTIVITY_CONTEXT: function() {
+            return this;
+        },
         processType: "temp",
         _init: function() {
             /** Create reference attribute from the destination canvas */
@@ -42,15 +44,16 @@ var _DOCUMENT = _DOCUMENT || {};
             return this.getAreaArguments(); // from metadata bounded area
         },
         setBoundedArea: function(processType) {
+            var position = this.directedPosition(processType);
             if(!this.boundedArea) {
                 this.boundedArea = (new _WORKSPACE.boundedArea(this));
             }
-            this.boundedArea.setArea(this.currentPosition(processType)[0] + this.point[0] - (this.size[0] / 2), this.currentPosition(processType)[1] + this.point[1] - (this.size[1] / 2), this.size[0], this.size[1]);
+            this.boundedArea.setArea(position[0] + this.point[0] - (this.size[0] / 2), position[1] + this.point[1] - (this.size[1] / 2), this.size[0], this.size[1]);
         },
         createElement: function(preCallback, processType, event, postCallback) { // automating create activity
             this.bindEvents();
             this.activity = new _WORKSPACE
-                    .activity(this.ACTIVITY_NAME, this.ACTIVITY_TYPE, this.ACTIVITY_METHOD, this.ACTIVITY_OPERATION, this.ACTIVITY_CONTEXT);
+                    .activity(this.ACTIVITY_NAME, this.ACTIVITY_TYPE, this.ACTIVITY_METHOD, this.ACTIVITY_OPERATION, this.ACTIVITY_CONTEXT());
             if(!this.size) {
                 this.size = [0, 0];
             }
