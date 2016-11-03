@@ -65,11 +65,11 @@ CONVERTDRAWING.extend = function ( obj, source ) {
     _WORKSPACE.drawing = '_default';
     CONVERTDRAWING.canvas = document.getElementById("document_decider");
     
-    window.ConvertDrawing = function(dfObject, params, callback) {
-        dfObject = new _WORKSPACE.extend(dfObject, params);
+    window.ConvertDrawing = function(cDgObject, params, callback) {
+        cDgObject = new _WORKSPACE.extend(cDgObject, params);
         if(typeof callback == "function") {
-            callback.apply(dfObject, params);
+            callback.apply(cDgObject, params);
         }
-        return dfObject;
+        return cDgObject;
     };
 })(window);

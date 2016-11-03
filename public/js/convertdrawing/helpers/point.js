@@ -48,9 +48,14 @@ CONVERTDRAWING.Point.prototype = {
     ACTIVITY_OPERATION: '',
     storageType: "metadata",
     bindEvents: function() {
-        var instance = this;
-        $(this.viewContext.canvas).on(this.triggerMethod + "." + this.name, function(event) {
-            
+        var proto = this;
+        $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event) {
+            $(_DRAWING.UI.canvasObject.dom).css({
+                zIndex: '1001'
+            });
+            var instance = window.ConvertDrawing(new proto.definition([event.pageX, event.pageY]), [null, proto.processType, event, null], function(params) {
+                this.bindPostEvents.apply(this, params);
+            });
         });
     },
     undo: {

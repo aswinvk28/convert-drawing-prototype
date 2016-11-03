@@ -23,7 +23,7 @@ body {
 }
 
 canvas#document:hover, #marker:hover {
-    cursor: none;
+    cursor: pointer;
 }
 
 canvas#document {
@@ -44,7 +44,7 @@ canvas.pull-left {
 
 #page_body {
     height: 100%;
-    cursor: none;
+    cursor: pointer;
     margin: 0;
     padding: 0;
     overflow: hidden;
@@ -68,41 +68,41 @@ div.grid-column#column-grid-1_1 {
     background-color: #fff;
     z-index: 999;
 }
-canvas.grid-canvas#canvas-grid-1_1 { // UI
+canvas.grid-canvas#canvas-grid-1_1 { /* UI */
     z-index: 999;
 }
 div.grid-column#column-grid-1_2 {
     background-color: #fff;
     z-index: 900;
 }
-canvas.grid-canvas#canvas-grid-1_2 { // metadata
+canvas.grid-canvas#canvas-grid-1_2 { /* document */
     z-index: 900;
 }
 div.grid-column#column-grid-1_3 {
     background-color: #fff;
     z-index: 800;
 }
-canvas.grid-canvas#canvas-grid-1_3 { // document
+canvas.grid-canvas#canvas-grid-1_3 { /* metadata */
     z-index: 800;
 }
 div.grid-column#column-grid-2_1 {
     background-color: #fff;
     z-index: 500;
 }
-canvas.grid-canvas#canvas-grid-2_1 { // export
+canvas.grid-canvas#canvas-grid-2_1 { /* export */
     z-index: 500;
 }
 div.grid-column#column-grid-2_2 {
     background-color: #fff;
     z-index: 700;
 }
-canvas.grid-canvas#canvas-grid-2_2 { // space
+canvas.grid-canvas#canvas-grid-2_2 { /* space */
     z-index: 700;
 }
-div.grid-column#column-grid-2_3 { // temp
+div.grid-column#column-grid-2_3 {
     background-color: #fff;
     z-index: 400;
 }
-canvas.grid-canvas#canvas-grid-2_3 {
+canvas.grid-canvas#canvas-grid-2_3 { /* temp */
     z-index: 400;
 }

@@ -50,8 +50,7 @@ var _DOCUMENT = _DOCUMENT || {};
         ACTIVITY_NAME: 'create',
         ACTIVITY_TYPE: 'native',
         ACTIVITY_METHOD: 'draw',
-        storageType: "document",
-        definition: CONVERTDRAWING.Line
+        storageType: "document"
     };
 
     CONVERTDRAWING.Line = _DOCUMENT.extend(CONVERTDRAWING.Line, CONVERTDRAWING.Element);

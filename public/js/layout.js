@@ -50,8 +50,30 @@ _WORKSPACE.preLayout = function(window, document) {
         exportC.id = "canvas-grid-2_1";
         tempC.id = "canvas-grid-2_2";
         spaceC.id = "canvas-grid-2_3";
+        uiC.className = docC.className = metaC.className = exportC.className = tempC.className = spaceC.className = "grid-canvas";
 
-        $('#page_body').append(uiC).append(docC).append(metaC).append(exportC).append(tempC).append(spaceC);
+        var uiC_container = document.createElement("div"), 
+            docC_container = document.createElement("div"),
+            metaC_container = document.createElement("div"),
+            exportC_container = document.createElement("div"),
+            tempC_container = document.createElement("div"),
+            spaceC_container = document.createElement("div");
+        uiC_container.id = "div-grid-1_1";
+        docC_container.id = "div-grid-1_2";
+        metaC_container.id = "div-grid-1_3";
+        exportC_container.id = "div-grid-2_1";
+        tempC_container.id = "div-grid-2_2";
+        spaceC_container.id = "div-grid-2_3";
+        uiC_container.className = docC_container.className = metaC_container.className = exportC_container.className = tempC_container.className = spaceC_container.className = "grid-div";
+
+        $(uiC_container).append(uiC);
+        $(docC_container).append(docC);
+        $(metaC_container).append(metaC);
+        $(exportC_container).append(exportC);
+        $(tempC_container).append(tempC);
+        $(spaceC_container).append(spaceC);
+        
+        $('#page_body').append(uiC_container).append(docC_container).append(metaC_container).append(exportC_container).append(tempC_container).append(spaceC_container);
     };
     
 };

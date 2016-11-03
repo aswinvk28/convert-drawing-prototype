@@ -31,13 +31,6 @@ var _DOCUMENT = _DOCUMENT || {};
         _WORKSPACE.event[_WORKSPACE.MAPEVENTS[index]] = $.Event(index + 'Map');
     }
     
-    $('.grid-canvas').on('clickPoint', function(event, eventData) {
-        var point = new CONVERTDRAWING.Point([eventData.pageX, eventData.pageY]);
-        point.draw();
-        event.preventDefault();
-        event.stopPropagation();
-    });
-    
     var showCanvas = function(id) {
         switch(id) {
             case 'canvas-grid-1_1': // UI
@@ -88,3 +81,18 @@ var _DOCUMENT = _DOCUMENT || {};
     _WORKSPACE.ACTIVITYHISTORY = new _WORKSPACE.activityHistory();
     
 })(window, jQuery);
+
+(function() {
+    CONVERTDRAWING.Line.prototype.bindEvents();
+    // CONVERTDRAWING.Point.prototype.bindEvents();
+
+    var currentState = "";
+
+    $('.ui-element').click(function(event) {
+        currentState = this;
+    });
+
+    $(_DRAWING.UI.canvasObject.dom).click(function(event) {
+        $(_DRAWING.UI.canvasObject.dom).trigger("click." + currentState.title, event);
+    });
+})();

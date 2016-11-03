@@ -78,7 +78,7 @@ _WORKSPACE.activity = function(name, type, method, operation) {
         
     };
     
-    this.execute = function(processType, event) {
+    this.execute = function(processType, event, storage) {
         instance.processType = processType;
         
         /** Create reference attribute from the destination canvas */
@@ -86,10 +86,10 @@ _WORKSPACE.activity = function(name, type, method, operation) {
         if(instance.type) {
             switch(instance.type) {
                 case "native":
-                    instance.executeNative.call(this, processType, event);
+                    instance.executeNative.call(this, processType, event, storage);
                     break;
                 case "generic":
-                    instance.executeGeneric.call(this, processType);
+                    instance.executeGeneric.call(this, processType, event, storage);
                     break;
                 case "hybrid":
                     instance.executeHybrid.call(this, processType);
@@ -103,11 +103,11 @@ _WORKSPACE.activity = function(name, type, method, operation) {
         }
     };
     
-    this.executeNative = function(processType, event) { // metadata to be determined earlier here
+    this.executeNative = function(processType, event, storage) { // metadata to be determined earlier here
         if(!!processType) {
             this[instance.method].call(this, event); // draw on temp
         }
-        if(!!this.storageType) {
+        if(!!this.storageType && storage) {
             instance.storageType = this.storageType;
             this.boundedArea.setData();
             this[instance.storageType + "Channel"]().dataTransfer.switch(this, instance.storageType);
@@ -118,14 +118,14 @@ _WORKSPACE.activity = function(name, type, method, operation) {
         }
     };
     
-    this.executeGeneric = function(processType, helper) {
+    this.executeGeneric = function(processType, event) {
         if(instance.operations.length > 0) {
             for(var index = 0; index < instance.operations; index++) {
                 instance.operations[index].pre.call(this);
             }
         }
         // function calls for generic
-        if(!helper) {
+        if(!event.helper) {
             var context = instance.context[instance.context.length - 1], data = {};
             while(context != undefined) {
                 data = jQuery.extend(true, data, context[instance.operation].call(context, instance, context.boundedArea));
@@ -137,7 +137,15 @@ _WORKSPACE.activity = function(name, type, method, operation) {
                 this.setMetadata(new _WORKSPACE.metadata(data, instance));
             }
         } else {
-            helper[instance.operation].call(helper, instance, helper.boundedArea);
+            if(instance.method && event.helper[instance.method]) {
+                event.helper[instance.method].call(event.helper, instance, event.helper.boundedArea);
+            }
+            if(instance.name && event.helper[instance.name]) {
+                event.helper[instance.name].call(event.helper, instance, event.helper.boundedArea);
+            }
+            if(instance.operation && event.helper[instance.operation]) {
+                event.helper[instance.operation].call(event.helper, instance, event.helper.boundedArea);
+            }
         }
         if(instance.operations.length > 0) {
             for(var index = 0; index < instance.operations; index++) {

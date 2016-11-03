@@ -1,0 +1,6 @@
+var CONVERTDRAWING = CONVERTDRAWING || {};
+var DOMSUPPORT = DOMSUPPORT || {};
+var _WORKSPACE = _WORKSPACE || {};
+var _DRAWING = _DRAWING || {};
+var _DOCUMENT = _DOCUMENT || {};
+

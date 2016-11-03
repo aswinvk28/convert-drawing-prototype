@@ -46,27 +46,17 @@ window.marker = (function($) {
 })(jQuery);
 
 var setMarkerEvents = function(marker) {
-    $('#' + DOMSUPPORT.marker).on('mousemove', marker.marker);
-    $('#page_body').find('canvas.grid-canvas').on('mousemove', marker.page);
+    $('#' + DOMSUPPORT.marker).mousemove(marker.marker);
+    $("#canvas-grid-1_1").mousemove(marker.page);
 };
 
 var unsetMarkerEvents = function(marker) {
     $('#' + DOMSUPPORT.marker).off('mousemove');
     $('#' + DOMSUPPORT.marker).unbind('mousemove');
-    $('#page_body').find('canvas.grid-canvas').off('mousemove');
-    $('#page_body').find('canvas.grid-canvas').unbind('mousemove');
 };
 
 (function($) {
     
-    unsetMarkerEvents(window.marker);
-    setMarkerEvents(window.marker);
-    
-    $('#' + DOMSUPPORT.marker).click(function(event) {
-        var canvas = _WORKSPACE.COORDINATESYSTEM.identifyCanvas(event.pageX, event.pageY);
-        $(canvas.dom).trigger("clickPoint", event);
-        event.stopPropagation();
-        event.preventDefault();
-    });
+    // setMarkerEvents(window.marker);
     
 })(jQuery);

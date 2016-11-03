@@ -7,6 +7,8 @@
 var _WORKSPACE = _WORKSPACE || {};
 var CONVERTDRAWING = CONVERTDRAWING || {};
 var DOMSUPPORT = DOMSUPPORT || {};
+var _DRAWING = _DRAWING || {};
+var _DOCUMENT = _DOCUMENT || {};
 
 _WORKSPACE.viewPort = function(params, channel) {
     var instance = this;

@@ -21,7 +21,7 @@ _WORKSPACE.metadata = function(object, context) {
         this.activity = activity;
         return this;
     };
-    CONVERTDRAWING.extend(this, object);
+    jQuery.extend(this, object);
 };
 
 _WORKSPACE.data = function(metadata) {

@@ -14,10 +14,12 @@ _DOCUMENT.extend = function(child, parent) {
     child.prototype = jQuery.extend(parent.prototype, child.prototype)
     function descendant() {
         this.parent = parent;
-        return child.apply(this, arguments);
+        child.apply(this, arguments);
+        return this;
     }
     descendant.prototype = {};
-    descendant.prototype = CONVERTDRAWING.extend(descendant.prototype, child.prototype);
+    descendant.prototype = jQuery.extend(descendant.prototype, child.prototype);
+    descendant.prototype["definition"] = descendant;
     return descendant;
 };
 

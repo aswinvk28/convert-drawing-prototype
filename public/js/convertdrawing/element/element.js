@@ -11,32 +11,34 @@ var _DRAWING = _DRAWING || {};
 var _DOCUMENT = _DOCUMENT || {};
 
 CONVERTDRAWING.Element = function() { // content
-    
+    return "element";
 };
 
 CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype, {
-    bindPostEvents: function() {
-        var instance = this, args = arguments;
-        $(this.tempContext.canvas).on("click." + this.name, function(clickEvent) {
-            instance.storageType = "document";
-            instance.setMidPoint(clickEvent.pageX, clickEvent.pageY);
-            instance.activity.execute.apply(instance, ["temp", clickEvent]);
-            instance.viewPort.temp.clearRect();
+    bindPostEvents: function(preCallback, processType, prevEvent, postCallback) {
+        var proto = this;
+        $(_DRAWING.UI.canvasObject.dom).off(proto.triggerMethod + proto.name);
+        $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + proto.name, function(clickEvent) {
+            proto.storageType = "document";
+            proto.setMidPoint(clickEvent.pageX, clickEvent.pageY);
+            proto.activity.execute.apply(proto, ["temp", clickEvent, proto.parent() !== "helper"]);
+            proto.viewPort.temp.clearRect();
             $(_DRAWING.UI.temp.rowSet[0].dom).css({
                 zIndex: '400'
             });
-            if(instance.hasOwnProperty("onClick")) {
-                instance.onClick.call(instance, clickEvent);
+            if(proto.hasOwnProperty("onClick")) {
+                proto.onClick.call(proto, clickEvent);
             }
+            proto.bindEvents();
         });
-        $(this.tempContext.canvas).on("mouseover." + this.name, function(mouseOverEvent) {
-            instance.viewPort.temp.clearRect();
-            if(instance.hasOwnProperty("onMouseOver")) {
-                instance.onMouseOver.call(instance, mouseOverEvent);
-            }
-            instance.setMidPoint(mouseOverEvent.pageX, mouseOverEvent.pageY);
-            instance.draw.call(instance, mouseOverEvent);
-        });
+        // $(_DRAWING.UI.canvasObject.dom).on("mouseover." + this.name, function(mouseOverEvent) {
+        //     proto.viewPort.temp.clearRect();
+        //     if(proto.hasOwnProperty("onMouseOver")) {
+        //         proto.onMouseOver.call(proto, mouseOverEvent);
+        //     }
+        //     proto.setMidPoint(mouseOverEvent.pageX, mouseOverEvent.pageY);
+        //     proto.draw.call(proto, mouseOverEvent);
+        // });
     },
     setMidPoint: function(endPoint) {
         var startPoint = this.start;
@@ -57,13 +59,13 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
         this.boundedArea.setArea(position[0] + this.point[0], position[1] + this.point[1], this.size[0], this.size[1]);
     },
     bindEvents: function() {
-        $(_DRAWING.UI.canvasObject.dom).on(this.triggerMethod + "." + this.name, function(event) {
-            $(_DRAWING.UI.temp.rowSet[0].dom).css({
-                zIndex: '1001'
+        var proto = this;
+        $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event) {
+            proto.setCanvasesToPosition();
+            var instance = new proto.definition([event.pageX, event.pageY]);
+            instance = window.ConvertDrawing(instance, [null, proto.processType, event, null], function(params) {
+                this.bindPostEvents.call(this, params);
             });
-            var instance = window.ConvertDrawing(new this.definition([event.pageX, event.pageY], [null, this.processType, event, null], function(params) {
-                instance.bindPostEvents.apply(instance, params);
-            }));
         });
     },
     size: [0,0]
