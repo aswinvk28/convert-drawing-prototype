@@ -109,7 +109,6 @@ _WORKSPACE.activity = function(name, type, method, operation) {
         }
         if(!!this.storageType && storage) {
             instance.storageType = this.storageType;
-            this.boundedArea.setData();
             this[instance.storageType + "Channel"]().dataTransfer.switch(this, instance.storageType);
             this[instance.method].call(this, event); // draw on UI
             this[instance.storageType + "Channel"]().dataTransfer.switch(this, instance.storageType);

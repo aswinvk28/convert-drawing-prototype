@@ -31,8 +31,7 @@ var _DOCUMENT = _DOCUMENT || {};
         ACTIVITY_NAME: 'create',
         ACTIVITY_TYPE: 'native',
         ACTIVITY_METHOD: 'draw',
-        storageType: "",
-        definition: CONVERTDRAWING.Rectangle
+        storageType: ""
     };
 
     CONVERTDRAWING.Rectangle = _DOCUMENT.extend(CONVERTDRAWING.Rectangle, CONVERTDRAWING.Element);

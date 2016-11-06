@@ -19,9 +19,13 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
         var proto = this;
         $(_DRAWING.UI.canvasObject.dom).off(proto.triggerMethod + proto.name);
         $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + proto.name, function(clickEvent) {
+            var boundedArea = _WORKSPACE.boundedArea(_DRAWING.TEMP.rowSet[0].dom), imagedata = null;
             proto.storageType = "document";
             proto.setMidPoint(clickEvent.pageX, clickEvent.pageY);
+            boundedArea.setArea(proto.pivot[0], proto.pivot[1], proto.size[0], proto.size[1]);
             proto.activity.execute.apply(proto, ["temp", clickEvent, proto.parent() !== "helper"]);
+            imagedata = _DRAWING.TEMP.rowSet[0].dom.getContext("2d").getImageData.apply(boundedArea.getAreaArguments());
+            proto.boundedArea.setData(true, imagedata);
             proto.viewPort.temp.clearRect();
             $(_DRAWING.UI.temp.rowSet[0].dom).css({
                 zIndex: '400'
@@ -42,12 +46,13 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
     },
     setMidPoint: function(endPoint) {
         var startPoint = this.start;
+        var position = this.directedPosition(this.storageType);
         this.endPoint = endPoint;
         this.xDistance = (endPoint[0] - startPoint[0]); this.yDistance = (endPoint[1] - startPoint[1]);
         this.size = [Math.abs(this.xDistance), Math.abs(this.yDistance)];
         this.boundedArea
-                .setPivot((startPoint[0] > endPoint[0] ? startPoint[0] : endPoint[0]), (startPoint[1] > endPoint[1] ? startPoint[1] : endPoint[1]));
-        this.point = [this.boundedArea.pivot[0] + this.xDistance / 2, this.boundedArea.pivot[1] + this.yDistance / 2];
+                .setPivot((startPoint[0] < endPoint[0] ? position[0] + startPoint[0] : position[0] + endPoint[0]), (startPoint[1] < endPoint[1] ? position[1] + startPoint[1] : position[1] + endPoint[1]));
+        this.point = [this.boundedArea.pivot[0] + this.size[0] / 2, this.boundedArea.pivot[1] + this.size[1] / 2];
         this.setBoundedArea(this.storageType);
         return this;
     },

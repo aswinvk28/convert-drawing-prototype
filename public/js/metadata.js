@@ -13,6 +13,7 @@ var _DOCUMENT = _DOCUMENT || {};
 _WORKSPACE.metadata = function(object, context) {
     this.isTransformed = false;
     this.context = context;
+    this.boundedArea = this.context.boundedArea;
     this.setBoundedArea = function(boundedArea) {
         this.boundedArea = boundedArea;
         return this;
@@ -62,7 +63,7 @@ _WORKSPACE.boundedArea = function(context) {
     };
     
     this.getAreaArguments = function() {
-        return [this.xC, this.yC, this.width, this.height];
+        return [this.xC - 4, this.yC - 4, this.width + 8, this.height + 8];
     };
     
     this.moveArea = function(xC, yC) {
@@ -87,7 +88,7 @@ _WORKSPACE.boundedArea = function(context) {
     };
     
     this.setData = function(create, data) {
-        if(!create) {
+        if(!create && !data) {
             this.imagedata = this.context[this.context.storageType + "Context"]()
                 .getImageData(this.xC - 4, this.yC - 4, this.width + 8, this.height + 8);
         } else {

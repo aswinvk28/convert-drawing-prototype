@@ -29,8 +29,6 @@ _WORKSPACE.preLayout = function(window, document) {
         this.screenWidth = window.screen.width;
         this.screenHeight = window.screen.height;
         
-        canvas.width = this.screenWidth / 3;
-        canvas.height = this.screenHeight / 2;
         this.canvasWidth = $(canvas).width();
         this.canvasHeight = $(canvas).height();
 

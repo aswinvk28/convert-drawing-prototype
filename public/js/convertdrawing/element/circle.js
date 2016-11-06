@@ -56,8 +56,7 @@ var _DOCUMENT = _DOCUMENT || {};
         ACTIVITY_NAME: 'create',
         ACTIVITY_TYPE: 'native',
         ACTIVITY_METHOD: 'draw',
-        storageType: "document",
-        definition: CONVERTDRAWING.Circle
+        storageType: "document"
     };
 
     CONVERTDRAWING.Circle = _DOCUMENT.extend(CONVERTDRAWING.Circle, CONVERTDRAWING.Element);
