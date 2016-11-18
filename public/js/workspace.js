@@ -31,8 +31,8 @@ _WORKSPACE.extend = function(child, params) {
 
 _WORKSPACE.extend.prototype = {
     _init: function() {
-        if(!!this.parent && this.parent.hasOwnProperty('_init')) {
-            this.parent._init.apply(this, arguments);
+        if(!!this.parent && this.parent.prototype.hasOwnProperty('_init')) {
+            this.parent.prototype._init.apply(this, arguments);
         }
         this.constructor.apply(this, arguments);
     }

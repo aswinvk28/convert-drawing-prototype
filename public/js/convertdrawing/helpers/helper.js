@@ -48,16 +48,20 @@ var _DOCUMENT = _DOCUMENT || {};
         _init: function() {
             /** Create reference attribute from the destination canvas */
             this.refContext = this[this.storageType + "Channel"]().dataTransfer.dest.dom.getContext("2d");
+            this.currentProcessType = _WORKSPACE.GRID.findContext(this.refContext);
         },
         currentPosition: function(processType) {
             return [this.boundedArea.xC, this.boundedArea.yC];
         },
         directedPosition: function(processType) {
+            if(processType == "ui") {
+                return [_DRAWING.UI.canvasObject.boundedArea.xC, _DRAWING.UI.canvasObject.boundedArea.yC];
+            }
             return [_DRAWING.UI.getChannel(processType)
-                    .dataTransfer.getMetadata()
+                    .dataTransfer.getMetadata(this)
                     .boundedArea.xC, 
             _DRAWING.UI.getChannel(processType)
-                    .dataTransfer.getMetadata()
+                    .dataTransfer.getMetadata(this)
                     .boundedArea.yC];
         },
         getAreaArguments: function() {
@@ -67,8 +71,10 @@ var _DOCUMENT = _DOCUMENT || {};
             var position = this.directedPosition(processType);
             if(!this.boundedArea) {
                 this.boundedArea = (new _WORKSPACE.boundedArea(this));
+                this.boundedArea.pivot = this.start;
             }
             this.boundedArea.setArea(position[0] + this.point[0] - (this.size[0] / 2), position[1] + this.point[1] - (this.size[1] / 2), this.size[0], this.size[1]);
+            // this.boundedArea.grid = _WORKSPACE.GRID.Locate({pageX: this.boundedArea.pivot[0], pageY: this.boundedArea.pivot[1]}, this.storageType); /* grid object */
         },
         createElement: function(preCallback, processType, event, postCallback) { // automating create activity
             this.activity = new _WORKSPACE
@@ -91,7 +97,7 @@ var _DOCUMENT = _DOCUMENT || {};
 //            undoOperation.registerPostUndoOperation(this.undo.post);
 //            this.activity.registerUndoOperation(undoOperation);
             event.helper = this;
-            this.activity.execute.apply(this, ["temp", event, this.parent() !== "helper"]);
+            this.activity.execute.apply(this, ["temp", event, this.parent() === "helper"]);
         }
     }, CONVERTDRAWING.base);
     

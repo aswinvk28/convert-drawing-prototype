@@ -23,11 +23,25 @@ _WORKSPACE.activityHistory = function() {
     };
 };
 
-_WORKSPACE.activityHistory.prototype = {
-    _NAME: ["create", "update", "move", "cut", "copy", "paste", "group", "split", "merge"],
-    _TYPE: ["native", "generic", "hybrid", "batch"],
-    _METHOD: ["rotate", "scale", "translate", "transform"]
-};
+_WORKSPACE.activityHistory.prototype.CREATE = 0;
+_WORKSPACE.activityHistory.prototype.UPDATE = 1;
+_WORKSPACE.activityHistory.prototype.MOVE = 2;
+_WORKSPACE.activityHistory.prototype.CUT = 3;
+_WORKSPACE.activityHistory.prototype.COPY = 4;
+_WORKSPACE.activityHistory.prototype.PASTE = 5;
+_WORKSPACE.activityHistory.prototype.GROUP = 6;
+_WORKSPACE.activityHistory.prototype.SPLIT = 7;
+_WORKSPACE.activityHistory.prototype.MERGE = 8;
+
+_WORKSPACE.activityHistory.prototype.ROTATE = 9;
+_WORKSPACE.activityHistory.prototype.SCALE = 10;
+_WORKSPACE.activityHistory.prototype.TRANSLATE = 11;
+_WORKSPACE.activityHistory.prototype.TRANSFORM = 12;
+
+_WORKSPACE.activityHistory.prototype.NATIVE = "native";
+_WORKSPACE.activityHistory.prototype.GENERIC = "generic";
+_WORKSPACE.activityHistory.prototype.HYBRID = "hybrid";
+_WORKSPACE.activityHistory.prototype.BATCH = "batch";
 
 _WORKSPACE.activity = function(name, type, method, operation) {
     var instance = this;
@@ -105,13 +119,22 @@ _WORKSPACE.activity = function(name, type, method, operation) {
     
     this.executeNative = function(processType, event, storage) { // metadata to be determined earlier here
         if(!!processType) {
+            if(typeof this['create'] == "function") {
+                this['create'].call(this, event);
+            }
             this[instance.method].call(this, event); // draw on temp
         }
         if(!!this.storageType && storage) {
             instance.storageType = this.storageType;
             this[instance.storageType + "Channel"]().dataTransfer.switch(this, instance.storageType);
+            if(typeof this['create'] == "function") {
+                this['create'].call(this, event);
+            }
             this[instance.method].call(this, event); // draw on UI
             this[instance.storageType + "Channel"]().dataTransfer.switch(this, instance.storageType);
+            if(typeof this['create'] == "function") {
+                this['create'].call(this, event);
+            }
             this[instance.method].call(this, event); // draw on storageType
             this[instance.storageType + "Channel"]().dataTransfer.switch(this, instance.storageType);
         }

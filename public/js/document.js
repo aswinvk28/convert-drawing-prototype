@@ -21,9 +21,14 @@ _DOCUMENT.nodeLink.prototype = {
         this.metadata = metadata;
         return this;
     },
-    getMetadata: function() {
+    getMetadata: function(absolute) {
+        if(absolute !== true) {
+            var metadata = new _WORKSPACE.metadata({}, this.dest);
+            return metadata;
+        }
         return this.metadata;
     },
+    /** based on backup of data, dest - master and src - slave */
     switch: function(context, processType) {
         var src = this.src;
         this.src = this.dest;
@@ -60,6 +65,7 @@ _DOCUMENT.dataTransfer = _DOCUMENT.extend(_DOCUMENT.dataTransfer, _DOCUMENT.node
 
 _DOCUMENT.channel = function(name, object) {
     this.name = name;
+    object.channel = this;
     if(object instanceof _DOCUMENT.dataTransfer) {
         this.dataTransfer = object;
         this.key = 'dataTransfer';

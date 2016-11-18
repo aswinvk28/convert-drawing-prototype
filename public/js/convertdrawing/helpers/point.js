@@ -13,7 +13,7 @@ var _DOCUMENT = _DOCUMENT || {};
 CONVERTDRAWING.Point = function(point) {
     this.point = point;
     this.start = point;
-    
+
     this.onMenuPick = function(event) {
         
     };

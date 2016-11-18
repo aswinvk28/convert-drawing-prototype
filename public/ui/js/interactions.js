@@ -6,10 +6,12 @@ var _DOCUMENT = _DOCUMENT || {};
 
 _WORKSPACE.INTERACTIONS = {};
 _WORKSPACE.ELEMENTS = {};
-
 _WORKSPACE.GRID = {};
+_WORKSPACE.BOUNDEDAREA = {};
 
 _WORKSPACE.GRID.List = {};
+_WORKSPACE.ELEMENTS.List = {};
+_WORKSPACE.BOUNDEDAREA.List = {};
 
 /** 
  * @point Array
@@ -38,7 +40,7 @@ _WORKSPACE.GRID.getPoints = function(event) {
 
 _WORKSPACE.GRID.findContext = function(context) {
     var type = "";
-    if(context.canvas.indexOf("1_1")) {
+    if(context.canvas.id.indexOf("1_1")) {
         type = "ui";
     } else if(context.canvas.id.indexOf("1_2")) {
         type = "document";
@@ -54,14 +56,36 @@ _WORKSPACE.GRID.findContext = function(context) {
     return type;
 };
 
+_WORKSPACE.GRID.getEventType = function(event) {
+    var eventType = null;
+    switch(event.type) {
+        case "mouseover":
+            eventType = ["data", "process"];
+            break;
+        case "mouseleave":
+        case "mousedown":
+        case "mouseup":
+            eventType = "process";
+            break;
+        case "click":
+        case "mouseenter":
+        case "mousemove":
+            eventType = "data";
+            break;
+        default:
+            break;
+    }
+    return eventType;
+};
+
 _WORKSPACE.GRID.isPointInGrid = function(event) {
     var found;
-    if(event.type == "mousemove" || event.type == "mouseover" || event.type == "mouseleave" || event.type == "mousedown" || event.type == "mouseup") {
+    if(event.type == "mouseover" || event.type == "mouseleave" || event.type == "mousedown" || event.type == "mouseup") {
         found = _WORKSPACE.GRID.FindInCurrent(event, _DRAWING.UI[element.processType]);
         if(!found) {
             found = _WORKSPACE.GRID.FindInCanvas(event, _DRAWING.UI[element.processType]);
         }
-    } else if(event.type == "click" || event.type == "mouseover" || event.type == "mouseenter") {
+    } else if(event.type == "click" || event.type == "mouseover" || event.type == "mouseenter" || event.type == "mousemove") {
         found = _WORKSPACE.GRID.FindInCanvas(event, _DRAWING.UI[element.processType]);
     }
     return found;
@@ -120,13 +144,14 @@ _WORKSPACE.GRID.SearchByElement = function(event, element) {
  * @return _WORKSPACE.ELEMENTS.Grid
  */
 _WORKSPACE.GRID.Locate = function(event, type) {
+    type = type || "ui";
     var actual = _WORKSPACE.GRID.actualCoordinates(event, type);
     var dimensions = this.getDimensions([actual[0] + event.pageX, actual[1] + event.pageY]);
 
     var gridStart = [this.Size.height * (dimensions[0] - 1), this.Size.width * (dimensions[1] - 1)];
     var gridEnd = [this.Size.height * (dimensions[0]), this.Size.width * (dimensions[1])];
 
-    return new _WORKSPACE.ELEMENTS.Grid({dimensions: dimensions, start: gridStart, end: gridEnd});
+    return new _WORKSPACE.ELEMENTS.Grid({dimensions: dimensions, start: gridStart, end: gridEnd, type: type});
 };
 
 /**
@@ -199,6 +224,9 @@ _WORKSPACE.ELEMENTS.Grid = function(object) {
     };
 
     this.findElement = function(event) {
+        var Grid = _WORKSPACE.GRID.Locate(event, this.type);
+        var Elements = _WORKSPACE.GRID.List[Grid.dimensions[0] + "_" + Grid.dimensions[1]]; /* object of type prefix_UUID: Object */
+
         
     };
 

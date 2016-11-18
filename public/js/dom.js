@@ -112,6 +112,9 @@ _WORKSPACE.canvasObject = function(current) { // setCanvas on Instantiation
     
     this.initialXC = 0;
     this.initialYC = 0;
+
+    this.xC = 0;
+    this.yC = 0;
     
     this.setCanvas();
     
@@ -124,17 +127,17 @@ _WORKSPACE.canvasObject.prototype = {
     setCanvas: function() {
         this.dom.width = this.width;
         this.dom.height = this.height;
-        this.dom.getContext("2d").translate(this.initialXC, this.initialYC);
+        this.dom.getContext("2d").translate(this.xC, this.yC);
         this.dom.getContext("2d").save();
 
         this.setBoundedArea();
     },
     setBoundedArea: function(endPoint) {
         this.boundedArea = (new _WORKSPACE.boundedArea(this))
-            .setArea(this.initialXC, this.initialYC, this.width, this.height);
+            .setArea(this.xC, this.yC, this.width, this.height);
     },
     clearRect: function() {
-        this.dom.getContext("2d").clearRect(this.initialXC, this.initialYC, this.width, this.height);
+        this.dom.getContext("2d").clearRect(this.xC, this.yC, this.width, this.height);
     }
 };
 
@@ -147,6 +150,9 @@ _WORKSPACE.documentObject = function(current) {
     
     this.initialXC = this.width * 3 / 7;
     this.initialYC = this.height * 3 / 7;
+
+    this.xC = this.width * 3 / 7;
+    this.yC = this.height * 3 / 7;
     
     this.setCanvas();
     
@@ -158,7 +164,7 @@ _WORKSPACE.documentObject = function(current) {
 _WORKSPACE.documentObject.prototype = {
     setBoundedArea: function(endPoint) {
         this.boundedArea = (new _WORKSPACE.boundedArea(this))
-            .setArea(this.initialXC, this.initialYC, this.width / 7, this.height / 7);
+            .setArea(this.xC, this.yC, this.width / 7, this.height / 7);
     }
 };
 
@@ -173,6 +179,9 @@ _WORKSPACE.metadataObject = function(current) {
     
     this.initialXC = this.width * 3 / 7;
     this.initialYC = this.height * 3 / 7;
+
+    this.xC = this.width * 3 / 7;
+    this.yC = this.height * 3 / 7;
     
     this.setCanvas();
     
@@ -184,7 +193,7 @@ _WORKSPACE.metadataObject = function(current) {
 _WORKSPACE.metadataObject.prototype = {
     setBoundedArea: function(endPoint) {
         this.boundedArea = (new _WORKSPACE.boundedArea(this))
-            .setArea(this.initialXC, this.initialYC, this.width / 7, this.height / 7);
+            .setArea(this.xC, this.yC, this.width / 7, this.height / 7);
     }
 };
 
@@ -210,7 +219,7 @@ _WORKSPACE.spaceObject.prototype = {
     },
     setBoundedArea: function(endPoint) {
         this.boundedArea = (new _WORKSPACE.boundedArea(this))
-            .setArea(this.initialXC, this.initialYC, this.width / 7, this.height / 7);
+            .setArea(this.xC, this.yC, this.width / 7, this.height / 7);
     }
 };
 

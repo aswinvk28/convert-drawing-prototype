@@ -24,6 +24,9 @@ var _DOCUMENT = _DOCUMENT || {};
             this.size = [Math.abs(xDistance), Math.abs(yDistance)];
             this.boundedArea
                     .setPivot((startPoint[0] < endPoint[0] ? startPoint[0] : endPoint[0]), (startPoint[1] < endPoint[1] ? startPoint[1] : endPoint[1]));
+
+            // this.boundedArea.grid = _WORKSPACE.GRID.Locate({pageX: this.boundedArea.pivot[0], pageY: this.boundedArea.pivot[1]}, this.storageType); /* grid object */
+
             this.point = [this.boundedArea.pivot[0] + (this.size[0] /*+ this.tempContext().lineWidth * Math.abs(Math.cos(angle))*/) / 2, 
                 this.boundedArea.pivot[1] + (this.size[1] /*+ this.tempContext().lineWidth * Math.abs(Math.sin(angle))*/) / 2];
             this.setBoundedArea(this.storageType);
@@ -34,10 +37,14 @@ var _DOCUMENT = _DOCUMENT || {};
             return [this.xC, this.yC, this.width + instance.tempContext().lineWidth, this.height + instance.tempContext().lineWidth];
         },
 
-        this.draw = function(event) {
+        this.create = function(event) {
             this.refContext.beginPath();
-            this.refContext.moveTo(this.start[0], this.start[1]);
-            this.refContext.lineTo(event.pageX, event.pageY);
+            this.refContext.moveTo(this.directedPosition(this.currentProcessType) + this.start[0], this.directedPosition(this.currentProcessType) + this.start[1]);
+            return this;
+        };
+
+        this.draw = function(event) {
+            this.refContext.lineTo(this.directedPosition(this.currentProcessType) + event.pageX, this.directedPosition(this.currentProcessType) + event.pageY);
             this.refContext.stroke();
             this.refContext.restore();
             return this;

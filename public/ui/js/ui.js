@@ -82,11 +82,11 @@ var _DOCUMENT = _DOCUMENT || {};
     
 })(window, jQuery);
 
+var currentState = "";
+
 (function() {
     CONVERTDRAWING.Line.prototype.bindEvents();
     // CONVERTDRAWING.Point.prototype.bindEvents();
-
-    var currentState = "";
 
     $('.ui-element').click(function(event) {
         currentState = this;
