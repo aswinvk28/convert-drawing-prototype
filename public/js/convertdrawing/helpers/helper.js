@@ -24,25 +24,98 @@ var _DOCUMENT = _DOCUMENT || {};
         ACTIVITY_CONTEXT: function() {
             return this;
         },
+        defaultPositions: {
+            temp: 500,
+            metadata: 800,
+            document: 900,
+            space: 400,
+            export: 700
+        },
+        positionIds: {
+            export: 21,
+            temp: 22,
+            space: 23,
+            metadata: 13,
+            document: 12,
+            ui: 11
+        },
+        defaultzIndexPositions: [{type: "ui", value: 1001}],
+        zIndexPositions: [{type: "ui", value: 1001}],
         setCanvasesToPosition: function() {
-            $(_DRAWING.UI.canvasObject.dom.parentNode).css({
-                zIndex: '1001'
+            _DRAWING.UI.canvasObject.dom.parentNode.style.zIndex = 1001;
+            $('.grid-div canvas.grid-canvas').each(function(index, element) {
+                var type = _WORKSPACE.GRID.findContext(element.getContext("2d"));
+                if(type != "ui") {
+                    _DRAWING.UI[type].rowSet[0].dom.parentNode.style.zIndex = CONVERTDRAWING.Helper.prototype.defaultPositions[type];
+                }
             });
-            $(_DRAWING.UI.temp.rowSet[0].dom.parentNode).css({
-                zIndex: '400'
+        },
+        generatezIndex: function(type) {
+            var num = new Number(CONVERTDRAWING.Helper.prototype.defaultPositions[type]);
+            return 1001 + num.valueOf() / 10;
+        },
+        resetzIndexPositions: function(type, zIndex) {
+            // change the target object for further events
+            _DRAWING.UI.targetObject = _DRAWING.UI[type].rowSet[0];
+            CONVERTDRAWING.Helper.prototype.zIndexPositions = CONVERTDRAWING.Helper.prototype.defaultzIndexPositions;
+            $('.grid-div canvas.grid-canvas').each(function(index, element) {
+                var current_type = _WORKSPACE.GRID.findContext(element.getContext("2d"));
+                if(current_type != "ui") {
+                    if(current_type == type) {
+                        CONVERTDRAWING.Helper.prototype.zIndexPositions.push({
+                            type: type,
+                            value: zIndex || CONVERTDRAWING.Helper.prototype.generatezIndex(type)
+                        });
+                    } else {
+                        var number = new Number(_DRAWING.UI[current_type].rowSet[0].dom.parentNode.style.zIndex);
+                        CONVERTDRAWING.Helper.prototype.zIndexPositions.push({
+                            type: current_type,
+                            value: number.valueOf()
+                        });
+                    }
+                }
             });
-            $(_DRAWING.UI.metadata.rowSet[0].dom.parentNode).css({
-                zIndex: '800'
-            });
-            $(_DRAWING.UI.document.rowSet[0].dom.parentNode).css({
-                zIndex: '900'
-            });
-            $(_DRAWING.UI.space.rowSet[0].dom.parentNode).css({
-                zIndex: '700'
-            });
-            $(_DRAWING.UI.export.rowSet[0].dom.parentNode).css({
-                zIndex: '500'
-            });
+        },
+        resetSpecificzIndex: function(type, zIndex) {
+            for(var index in CONVERTDRAWING.Helper.prototype.zIndexPositions) {
+                if(CONVERTDRAWING.Helper.prototype.zIndexPositions[index].type == type) {
+                    CONVERTDRAWING.Helper.prototype.zIndexPositions[index].value = zIndex;
+                }
+            }
+        },
+        moveToTop: function(type, zIndex) {
+            if(CONVERTDRAWING.Helper.prototype.zIndexPositions.length == 1) {
+                CONVERTDRAWING.Helper.prototype.resetzIndexPositions(type, zIndex);
+            }
+            // sort zIndex positions
+            CONVERTDRAWING.Helper.prototype.zIndexPositions = CONVERTDRAWING.Helper.prototype.zIndexPositions.sort(sortCompare);
+            
+            // move the canvas to the top
+            var topmost = CONVERTDRAWING.Helper.prototype.zIndexPositions[0];
+            if(topmost.type != "ui") {
+                var topmostParent = _DRAWING.UI[topmost.type].rowSet[0].dom.parentNode;
+                $(topmostParent).remove();
+                $('#page_body').prepend(topmostParent);
+                // replace the dom object
+                _DRAWING.UI[topmost.type].rowSet[0].dom = topmostParent.firstChild;
+                _DRAWING.UI[topmost.type].rowSet[0].dom.parentNode.style.zIndex = topmost.value;
+            }
+        },
+        moveToRequiredOrder: function(type) {
+            var currentParent = _DRAWING.UI[type].rowSet[0].dom.parentNode, positionId = CONVERTDRAWING.Helper.prototype.positionIds[type];
+            var zIndex = new Number(currentParent.style.zIndex);
+            $(currentParent).remove();
+            CONVERTDRAWING.Helper.prototype.zIndexPositions = CONVERTDRAWING.Helper.prototype.defaultzIndexPositions;
+            CONVERTDRAWING.Helper.prototype.setCanvasesToPosition();
+            CONVERTDRAWING.Helper.prototype.resetzIndexPositions(type, CONVERTDRAWING.Helper.prototype.defaultPositions[type]);
+            // CONVERTDRAWING.Helper.prototype.resetSpecificzIndex(type, CONVERTDRAWING.Helper.prototype.defaultPositions[type]);
+            // sort zIndex positions
+            CONVERTDRAWING.Helper.prototype.zIndexPositions = CONVERTDRAWING.Helper.prototype.zIndexPositions.sort(sortCompare);
+            positionId = ("" + positionId).split("");
+            positionId = ((new Number(positionId[1])).valueOf() - 1) == 0 ? "" + ((new Number(positionId[0])).valueOf() - 1) + "_" + positionId[1] : positionId[0] + "_" + ((new Number(positionId[1])).valueOf() - 1);
+            $('#div-grid-' + positionId).after(currentParent);
+            _DRAWING.UI[type].rowSet[0].dom = currentParent.firstChild;
+            _DRAWING.UI[type].rowSet[0].dom.parentNode.style.zIndex = CONVERTDRAWING.Helper.prototype.defaultPositions[type];
         },
         processType: "temp",
         _init: function() {

@@ -10,12 +10,11 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/style.css" />
-        <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
         <script type="text/javascript" src="js/lib/jquery.min.js"></script>
     </head>
     <body>
         <div id="menubar" class="absolute" style="top:15px;left:20px">
-            <ul class="nav nav-pills">
+            <ul class="unstyled">
                 <li role="presentation"><a id="point" title="Point" class="btn btn-default ui-element" href="javascript:void(0)" name="point"><img src="images/letter-x-24x24.png" /></a></li>
                 <li role="presentation"><a id="line" title="Line" class="btn btn-default ui-element" href="javascript:void(0)" name="line"><img src="images/square-24x24.png" /></a></li>
                 <li role="presentation"><a id="arc" title="Arc" class="btn btn-default ui-element" href="javascript:void(0)" name="arc"><img src="images/letter-x-24x24.png" /></a></li>
@@ -23,8 +22,9 @@ and open the template in the editor.
                 <li role="presentation"><a id="square" title="Square" class="btn btn-default ui-element" href="javascript:void(0)" name="square"><img src="images/square-24x24.png" /></a></li>
             </ul>
         </div>
+        <canvas id="document_decider" style="background-color:transparent;display:none"></canvas>
         <div id="page_body" class="col-lg-12">
-            <canvas id="document_decider" style="background-color:transparent;display:none"></canvas>
+            
         </div>
         <div id="domsupport">
             <a class="tracking absolute" id="marker" onclick="triggerCoordinatedCanvas(event);" style="display:none"><img src="images/location-marker-32x32.png" id="marker_image" /></a>
@@ -46,19 +46,21 @@ and open the template in the editor.
         <script type="text/javascript" src="/js/layout.js"></script>
         <script type="text/javascript" src="/js/drawing.js"></script>
         <script type="text/javascript" src="/js/activity.js"></script>
+        <script type="text/javascript" src="/ui/js/interactions.js"></script>
         
         <!-- All elements -->
         <script type="text/javascript" src="/js/convertdrawing/helpers/helper.js"></script>
         <script type="text/javascript" src="/js/convertdrawing/helpers/marker.js"></script>
         <script type="text/javascript" src="/js/convertdrawing/helpers/point.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/emulator.js"></script>
         <script type="text/javascript" src="/js/convertdrawing/element/element.js"></script>
         <script type="text/javascript" src="/js/convertdrawing/element/line.js"></script>
         <script type="text/javascript" src="/js/convertdrawing/element/circle.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/rectangle.js"></script>
         
         <script type="text/javascript" src="/js/convertdrawing/objects/object.js"></script>
         <script type="text/javascript" src="/js/convertdrawing/block/block.js"></script>
         
         <script type="text/javascript" src="/ui/js/ui.js"></script>
-        <script type="text/javascript" src="/ui/js/interactions.js"></script>
     </body>
 </html>

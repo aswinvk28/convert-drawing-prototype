@@ -17,9 +17,11 @@ CONVERTDRAWING.Element = function() { // content
 CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype, {
     bindPostEvents: function(preCallback, processType, prevEvent, postCallback) {
         var proto = this;
-        $(_DRAWING.UI.canvasObject.dom).off(proto.triggerMethod + "." + proto.name);
-        $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(clickEvent) {
-            var instance = _WORKSPACE.ELEMENTS.List[_WORKSPACE.ELEMENTS.List['current']];
+        // move to top
+        this.moveToTop("temp");
+        $(_DRAWING.UI.targetObject.dom).off(proto.triggerMethod + "." + proto.name);
+        $(_DRAWING.UI.targetObject.dom).on(proto.triggerMethod + "." + proto.name, function(clickEvent) {
+            var instance = _WORKSPACE.ELEMENTS.List[CONVERTDRAWING.active_element];
             var boundedArea = instance.boundedArea, imagedata = null;
             
             instance.storageType = "document";
@@ -28,21 +30,28 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
             imagedata = _DRAWING.TEMP.rowSet[0].dom.getContext("2d").getImageData(boundedArea.xC, boundedArea.yC, instance.size[0], instance.size[1]);
             instance.boundedArea.setData(true, imagedata);
             instance.viewPort().temp.rowSet[0].clearRect();
-            $(_DRAWING.UI.temp.rowSet[0].dom).css({
-                zIndex: '400'
-            });
-            if(instance.hasOwnProperty("onClick")) {
-                instance.onClick.call(instance, clickEvent);
+            
+            // move to required order
+            proto.moveToRequiredOrder("temp");
+            
+            if(instance.hasOwnProperty('on' + proto.triggerMethod + 'Finish')) {
+                instance['on' + proto.triggerMethod + 'Finish'].call(instance, clickEvent);
             }
-            instance.bindEvents();
+            $(_DRAWING.UI.targetObject.dom).off("mousemove." + proto.name);
+            // CONVERTDRAWING.Rectangle.prototype.bindEvents();
         });
-        $(_DRAWING.UI.canvasObject.dom).on("mousemove" + "." + proto.name, function(mouseOverEvent) {
+    },
+    bindInteractions: function(preCallback, processType, prevEvent, postCallback) {
+        var proto = this;
+        var emulator = new CONVERTDRAWING.Emulator(_DRAWING.UI.targetObject.dom.getContext("2d"), proto);
+        $(_DRAWING.UI.targetObject.dom).off("mousemove." + proto.name);
+        $(_DRAWING.UI.targetObject.dom).on("mousemove." + proto.name, function(mouseOverEvent) {
             proto.viewPort().temp.rowSet[0].clearRect();
             if(proto.hasOwnProperty("onMouseOver")) {
                 proto.onMouseOver.call(proto, mouseOverEvent);
             }
-            proto.setMidPoint(mouseOverEvent.pageX, mouseOverEvent.pageY);
-            proto.draw.call(proto, mouseOverEvent);
+            proto.setMidPoint([mouseOverEvent.pageX, mouseOverEvent.pageY]);
+            emulator.draw(mouseOverEvent);
         });
     },
     setMidPoint: function(endPoint) {
@@ -74,12 +83,16 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
         $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event) {
             proto.setCanvasesToPosition();
             var instance = new proto.definition([event.pageX, event.pageY]); // activity creation and drawing initiation
+            var proto_uuid = proto.name + "_" + uuid.v1();
+            CONVERTDRAWING.active_element = proto_uuid;
+            if(instance.hasOwnProperty('on' + proto.triggerMethod + 'Start')) {
+                instance['on' + proto.triggerMethod + 'Start'].call(instance, event);
+            }
             instance = window.ConvertDrawing(instance, [null, proto.processType, event, null], function(params) {
                 this.bindPostEvents.call(this, params);
+                this.bindInteractions.call(this, params);
             });
-            var proto_uuid = proto.name + "_" + uuid.v1();
             _WORKSPACE.ELEMENTS.List[proto_uuid] = instance;
-            _WORKSPACE.ELEMENTS.List['current'] = proto_uuid;
         });
     },
     size: [0,0]

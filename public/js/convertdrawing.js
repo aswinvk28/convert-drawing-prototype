@@ -13,18 +13,28 @@ var _DOCUMENT = _DOCUMENT || {};
 
 self.console = self.console || {
 
-	info: function () {},
-	log: function () {},
-	debug: function () {},
-	warn: function () {},
-	error: function () {}
+    info: function () {},
+    log: function () {},
+    debug: function () {},
+    warn: function () {},
+    error: function () {}
 
 };
 
 String.prototype.trim = String.prototype.trim || function () {
 
-	return this.replace( /^\s+|\s+$/g, '' );
+    return this.replace( /^\s+|\s+$/g, '' );
 
+};
+
+var sortCompare = function(a, b) {
+    if (a.value > b.value) {
+        return -1;
+    }
+    if (a.value < b.value) {
+        return 1;
+    }
+    return 0;
 };
 
 CONVERTDRAWING.extend = function ( obj, source ) {

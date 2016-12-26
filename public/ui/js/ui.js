@@ -82,11 +82,13 @@ var _DOCUMENT = _DOCUMENT || {};
     
 })(window, jQuery);
 
-var currentState = "";
+var currentState = "", instance, found = false;
 
 (function() {
-    CONVERTDRAWING.Line.prototype.bindEvents();
+    // CONVERTDRAWING.Line.prototype.bindEvents();
     // CONVERTDRAWING.Point.prototype.bindEvents();
+    // CONVERTDRAWING.Circle.prototype.bindEvents();
+    // CONVERTDRAWING.Rectangle.prototype.bindEvents();
 
     $('.ui-element').click(function(event) {
         currentState = this;
@@ -95,4 +97,5 @@ var currentState = "";
     $(_DRAWING.UI.canvasObject.dom).click(function(event) {
         $(_DRAWING.UI.canvasObject.dom).trigger("click." + currentState.title, event);
     });
+
 })();

@@ -136,7 +136,6 @@ _WORKSPACE.activity = function(name, type, method, operation) {
                 this['create'].call(this, event);
             }
             this[instance.method].call(this, event); // draw on storageType
-            this[instance.storageType + "Channel"]().dataTransfer.switch(this, instance.storageType);
         }
     };
     

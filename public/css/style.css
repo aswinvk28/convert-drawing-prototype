@@ -37,6 +37,12 @@ canvas.pull-left {
 .absolute {
     position: absolute;
 }
+.unstyled {
+    list-style: none;
+}
+.unstyled li {
+    display: inline;
+}
 
 #menubar {
     z-index: 9999;
@@ -51,57 +57,30 @@ canvas.pull-left {
     padding-left: 0;
     padding-right: 0;
 }
-
-div.grid-column {
+div.grid-div {
     padding-left: 0;
     padding-right: 0;
     background-color: transparent;
 }
-
 canvas.grid-canvas {
     padding-left: 0;
     padding-right: 0;
     background-color: transparent;
 }
-
-div.grid-column#column-grid-1_1 {
-    background-color: #fff;
-    z-index: 999;
-}
 canvas.grid-canvas#canvas-grid-1_1 { /* UI */
     z-index: 999;
-}
-div.grid-column#column-grid-1_2 {
-    background-color: #fff;
-    z-index: 900;
 }
 canvas.grid-canvas#canvas-grid-1_2 { /* document */
     z-index: 900;
 }
-div.grid-column#column-grid-1_3 {
-    background-color: #fff;
-    z-index: 800;
-}
 canvas.grid-canvas#canvas-grid-1_3 { /* metadata */
     z-index: 800;
-}
-div.grid-column#column-grid-2_1 {
-    background-color: #fff;
-    z-index: 500;
 }
 canvas.grid-canvas#canvas-grid-2_1 { /* export */
     z-index: 500;
 }
-div.grid-column#column-grid-2_2 {
-    background-color: #fff;
-    z-index: 700;
-}
 canvas.grid-canvas#canvas-grid-2_2 { /* space */
     z-index: 700;
-}
-div.grid-column#column-grid-2_3 {
-    background-color: #fff;
-    z-index: 400;
 }
 canvas.grid-canvas#canvas-grid-2_3 { /* temp */
     z-index: 400;

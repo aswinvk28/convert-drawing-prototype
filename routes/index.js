@@ -16,4 +16,8 @@ router.get('/test/dom/spec-runner', function(req, res, next) {
     res.render('dom/specRunner');
 });
 
+router.get('/elements', function(req, res, next) {
+    res.render('elements');
+})
+
 module.exports = router;

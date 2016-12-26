@@ -28,10 +28,10 @@ CONVERTDRAWING.Point = function(point) {
     
     this.draw = function() {
         this.refContext.beginPath();
-        this.refContext.moveTo(this.point[0] - this.size / 2,this.point[1] - this.size / 2);
-        this.refContext.lineTo(this.point[0] + this.size / 2,this.point[1] + this.size / 2); //+,+
-        this.refContext.moveTo(this.point[0] - this.size / 2,this.point[1] + this.size / 2); //-,+
-        this.refContext.lineTo(this.point[0] + this.size / 2,this.point[1] - this.size / 2); //-,+
+        this.refContext.moveTo(this.point[0] - this.size[0] / 2,this.point[1] - this.size[1] / 2);
+        this.refContext.lineTo(this.point[0] + this.size[0] / 2,this.point[1] + this.size[1] / 2); //+,+
+        this.refContext.moveTo(this.point[0] - this.size[0] / 2,this.point[1] + this.size[1] / 2); //-,+
+        this.refContext.lineTo(this.point[0] + this.size[0] / 2,this.point[1] - this.size[1] / 2); //-,+
         this.refContext.stroke();
         this.refContext.restore();
         return this;
@@ -54,7 +54,7 @@ CONVERTDRAWING.Point.prototype = {
                 zIndex: '1001'
             });
             var instance = window.ConvertDrawing(new proto.definition([event.pageX, event.pageY]), [null, proto.processType, event, null], function(params) {
-                this.bindPostEvents.apply(this, params);
+                // this.bindPostEvents.apply(this, params);
             });
         });
     },

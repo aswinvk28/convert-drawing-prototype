@@ -37,17 +37,29 @@ var _DOCUMENT = _DOCUMENT || {};
             return [this.xC, this.yC, this.width + instance.tempContext().lineWidth, this.height + instance.tempContext().lineWidth];
         },
 
-        this.create = function(event) {
-            this.refContext.beginPath();
-            this.refContext.moveTo(this.directedPosition(this.currentProcessType) + this.start[0], this.directedPosition(this.currentProcessType) + this.start[1]);
-            return this;
-        };
+        // this.create = function(event) {
+        //     var position = this.directedPosition(this.currentProcessType);
+        //     this.refContext.beginPath();
+        //     this.refContext.moveTo(position[0] + this.start[0], position[1] + this.start[1]);
+        //     return this;
+        // };
 
         this.draw = function(event) {
-            this.refContext.lineTo(this.directedPosition(this.currentProcessType) + event.pageX, this.directedPosition(this.currentProcessType) + event.pageY);
+            var position = this.directedPosition(this.currentProcessType);
+            this.refContext.beginPath();
+            this.refContext.moveTo(position[0] + this.start[0], position[1] + this.start[1]);
+            this.refContext.lineTo(position[0] + event.pageX, position[1] + event.pageY);
             this.refContext.stroke();
             this.refContext.restore();
             return this;
+        };
+
+        this.onclickStart = function(event) {
+            
+        };
+
+        this.onclickFinish = function(event) {
+            CONVERTDRAWING.active_element = null;
         };
     };
 

@@ -33,4 +33,5 @@ var _DOCUMENT = _DOCUMENT || {};
     _DRAWING.UI = ConvertDrawing(viewPort); // goes to constructor and _init
     _DRAWING.UI.canvasObject = params[0];
     _DRAWING.TEMP = _DRAWING.UI.temp;
+    _DRAWING.UI.targetObject = params[0];
 })();

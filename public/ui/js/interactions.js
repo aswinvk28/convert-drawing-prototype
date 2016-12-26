@@ -40,17 +40,17 @@ _WORKSPACE.GRID.getPoints = function(event) {
 
 _WORKSPACE.GRID.findContext = function(context) {
     var type = "";
-    if(context.canvas.id.indexOf("1_1")) {
+    if(context.canvas.id.indexOf("1_1") !== -1) {
         type = "ui";
-    } else if(context.canvas.id.indexOf("1_2")) {
+    } else if(context.canvas.id.indexOf("1_2") !== -1) {
         type = "document";
-    } else if(context.canvas.id.indexOf("1_3")) {
+    } else if(context.canvas.id.indexOf("1_3") !== -1) {
         type = "metadata";
-    } else if(context.canvas.id.indexOf("2_1")) {
+    } else if(context.canvas.id.indexOf("2_1") !== -1) {
         type = "export";
-    } else if(context.canvas.id.indexOf("2_2")) {
+    } else if(context.canvas.id.indexOf("2_2") !== -1) {
         type = "temp";
-    } else if(context.canvas.id.indexOf("2_3")) {
+    } else if(context.canvas.id.indexOf("2_3") !== -1) {
         type = "space";
     }
     return type;
@@ -78,32 +78,35 @@ _WORKSPACE.GRID.getEventType = function(event) {
     return eventType;
 };
 
-_WORKSPACE.GRID.isPointInGrid = function(event) {
+_WORKSPACE.GRID.isPointInGrid = function(event, processType) {
     var found;
+    if(!event.target) {
+        event.target = _WORKSPACE.ELEMENTS.List[CONVERTDRAWING.active_element];
+    }
     if(event.type == "mouseover" || event.type == "mouseleave" || event.type == "mousedown" || event.type == "mouseup") {
-        found = _WORKSPACE.GRID.FindInCurrent(event, _DRAWING.UI[element.processType]);
+        found = _WORKSPACE.GRID.FindInCurrent(event, _DRAWING.UI[processType].rowSet[0].dom.getContext("2d"));
         if(!found) {
-            found = _WORKSPACE.GRID.FindInCanvas(event, _DRAWING.UI[element.processType]);
+            found = _WORKSPACE.GRID.FindInCanvas(event, _DRAWING.UI[processType].rowSet[0].dom.getContext("2d"));
         }
     } else if(event.type == "click" || event.type == "mouseover" || event.type == "mouseenter" || event.type == "mousemove") {
-        found = _WORKSPACE.GRID.FindInCanvas(event, _DRAWING.UI[element.processType]);
+        found = _WORKSPACE.GRID.FindInCanvas(event, _DRAWING.UI[processType].rowSet[0].dom.getContext("2d"));
     }
     return found;
 };
 
 _WORKSPACE.GRID.actualCoordinates = function(event, type) {
-    var type = !type ? _WORKSPACE.GRID.findContext(event.target.getContext("2d")) : type;
+    var type = !type ? _WORKSPACE.GRID.findContext(event.helper.viewContext()) : type;
     if(type !== "" && type !== "ui") {
-        return CONVERTDRAWING.Helper.prototype.currentPosition(type);
+        return CONVERTDRAWING.Helper.prototype.directedPosition(type);
     }
     return [_DRAWING.UI.canvasObject.boundedArea.xC, _DRAWING.UI.canvasObject.boundedArea.yC];
 };
 
-_WORKSPACE.GRID.SearchElementsByPoint = function(event) {
+_WORKSPACE.GRID.SearchElementsByPoint = function(event, storageType) {
     var found = false, Grid = null, Elements = null;
-    found = _WORKSPACE.GRID.isPointInGrid(event);
+    found = _WORKSPACE.GRID.isPointInGrid(event, storageType);
     if(found) {
-        Grid = _WORKSPACE.GRID.Locate(event, element.storageType);
+        Grid = _WORKSPACE.GRID.Locate(storageType);
         Elements = Grid.findElement(event);
     }
     return Elements;
@@ -126,7 +129,7 @@ _WORKSPACE.GRID.SearchElementsByPoint = function(event) {
  */
 _WORKSPACE.GRID.SearchByElement = function(event, element) {
     var found = false, Grid = null, Element = null;
-    found = _WORKSPACE.GRID.isPointInGrid(event);
+    found = _WORKSPACE.GRID.isPointInGrid(event, element.storageType);
     if(found) {
         Grid = _WORKSPACE.GRID.Locate(event, element.storageType);
         Element = Grid.spotElement(element, event);
@@ -158,7 +161,7 @@ _WORKSPACE.GRID.Locate = function(event, type) {
  * @context Document, Metadata, etc. context
  */
 _WORKSPACE.GRID.FindInCanvas = function(event, context) {
-    var actual = _WORKSPACE.GRID.actualCoordinates(event);
+    var actual = _WORKSPACE.GRID.actualCoordinates(event, _WORKSPACE.GRID.findContext(context));
     for(var i = actual[0] + event.pageX - (this.Size.spread - 1), j = actual[1] + event.pageY - (this.Size.spread - 1); i <= actual[0] + event.pageX + (this.Size.spread - 1), j <= actual[1] + event.pageY + (this.Size.spread - 1); i++, j++) {
         if(context.isPointInStroke(i,j)) {
             return true;
@@ -171,7 +174,7 @@ _WORKSPACE.GRID.FindInCanvas = function(event, context) {
  * @context Document, Metadata, etc. context
  */
 _WORKSPACE.GRID.FindInCurrent = function(event, context) {
-    var actual = _WORKSPACE.GRID.actualCoordinates(event);
+    var actual = _WORKSPACE.GRID.actualCoordinates(event, _WORKSPACE.GRID.findContext(context));
     for(var i = actual[0] + event.pageX - (this.Size.spread - 1), j = actual[1] + event.pageY - (this.Size.spread - 1); i <= actual[0] + event.pageX + (this.Size.spread - 1), j <= actual[1] + event.pageY + (this.Size.spread - 1); i++, j++) {
         if(context.isPointInPath(i,j)) {
             return true;
@@ -200,7 +203,7 @@ _WORKSPACE.ELEMENTS.Grid = function(object) {
     jQuery.extend(this, object);
 
     this.spotElement = function(element, event) {
-        var actual = _WORKSPACE.GRID.actualCoordinates(event), found = false, relativeX, relativeY, points = [];
+        var actual = _WORKSPACE.GRID.actualCoordinates(event, this.type), found = false, relativeX, relativeY, points = [];
         /** Found the point is within the bounded area */
         if(actual[0] + event.pageX > element.boundedArea.xC && actual[1] + event.pageY > element.boundedArea.yC 
         && actual[0] + event.pageX < element.boundedArea.xC + element.boundedArea.width && actual[1] + event.pageY < element.boundedArea.yC + elelment.boundedArea.height) {
