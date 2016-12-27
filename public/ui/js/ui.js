@@ -18,54 +18,6 @@ var _DOCUMENT = _DOCUMENT || {};
     _WORKSPACE.MAPEVENTS = ['mousedown', 'mouseup'];
     _WORKSPACE.ROUTES = {'canvas-grid-1_1': '/#/presentation'};
     
-    for(var index in _WORKSPACE.POINTEVENTS) {
-        _WORKSPACE.event[_WORKSPACE.POINTEVENTS[index]] = $.Event(index + 'Point');
-        _WORKSPACE.event[_WORKSPACE.POINTEVENTS[index]].translate = true;
-    }
-    
-    for(var index in _WORKSPACE.SPACEEVENTS) {
-        _WORKSPACE.event[_WORKSPACE.SPACEEVENTS[index]] = $.Event(index + 'Space');
-    }
-    
-    for(var index in _WORKSPACE.MAPEVENTS) {
-        _WORKSPACE.event[_WORKSPACE.MAPEVENTS[index]] = $.Event(index + 'Map');
-    }
-    
-    var showCanvas = function(id) {
-        switch(id) {
-            case 'canvas-grid-1_1': // UI
-                $('.grid-column').hide();
-                $('#column-grid-1_1').show();
-                $('#column-grid-1_1').css({
-                    width: _WORKSPACE.PRELAYOUT.screenWidth,
-                    height: _WORKSPACE.PRELAYOUT.screenHeight
-                });
-                $('#canvas-grid-1_1').css({
-                    width: 'auto',
-                    height: 'auto'
-                });
-                break;
-            case 'canvas-grid-1_2': // Document
-                break;
-            case 'canvas-grid-1_3': // Metadata
-                break;
-            case 'canvas-grid-2_1': // Export
-                break;
-            case 'canvas-grid-2_2': // Temp
-                break;
-            case 'canvas-grid-2_3': // Space
-                break;
-            default:
-                break;
-        }
-    };
-    
-    for(index in _WORKSPACE.ROUTES) {
-        if(window.location.href.indexOf(_WORKSPACE.ROUTES[index]) !== -1) {
-            showCanvas(index);
-        }
-    }
-    
     DOMSUPPORT.UIDocument = window.PubSub.subscribe("drawing/document", function(dataTransfer) {
         
     });
@@ -79,6 +31,21 @@ var _DOCUMENT = _DOCUMENT || {};
     });
     
     _WORKSPACE.ACTIVITYHISTORY = new _WORKSPACE.activityHistory();
+
+    $(_DRAWING.UI.canvasObject.dom).on('mousedown.Wall', function(event) {
+        $(_DRAWING.UI.canvasObject.dom).on('mousemove.Wall', function(event) {
+            event.type = 'drag.Wall';
+            $(_DRAWING.UI.canvasObject.dom).trigger(event, settings(proto.definition).getThickness(), jQuery.extend({
+                option: settings(proto.definition, true).getOption(),
+                axis: settings(proto.definition, true).getAxis(),
+                quadrant: settings(proto.definition, true).getQuadrant()
+            }, settings(proto.definition, true).getProperties()));
+        });
+    });
+
+    $(_DRAWING.UI.canvasObject.dom).on('mouseup.Wall', function(event) {
+        $(_DRAWING.UI.canvasObject.dom).off('mousedown.Wall');
+    });
     
 })(window, jQuery);
 

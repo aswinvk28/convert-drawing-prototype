@@ -47,6 +47,7 @@ _WORKSPACE.boundedArea = function(context) {
     
     this.setPivot = function(pivotX, pivotY) {
         this.pivot = [pivotX, pivotY];
+        this.context.pivot = [pivotX, pivotY];
     };
     
     this.setControlPoint = function(controlX, controlY) {

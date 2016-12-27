@@ -25,9 +25,8 @@ var _DOCUMENT = _DOCUMENT || {};
 
         this.draw = function(event) {
             var position = this.directedPosition(this.currentProcessType);
-            this.refContext.fillStyle = '#000000';
             this.refContext.moveTo(position[0] + this.start[0], position[1] + this.start[1]);
-            this.refContext.fillRect(position[0] + this.start[0], position[1] + this.start[1], position[0] + event.pageX, position[1] + event.pageY);
+            this.refContext.rect(position[0] + this.start[0], position[1] + this.start[1], event.pageX - this.start[0], event.pageY - this.start[1]);
             this.refContext.restore();
             return this;
         };

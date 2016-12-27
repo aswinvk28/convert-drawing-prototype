@@ -71,6 +71,10 @@ CONVERTDRAWING.extend = function ( obj, source ) {
 
 };
 
+CONVERTDRAWING.flip = function(context, axis, offset) {
+    
+};
+
 (function(window) {
     _WORKSPACE.drawing = '_default';
     CONVERTDRAWING.canvas = document.getElementById("document_decider");

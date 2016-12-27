@@ -25,7 +25,7 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
             var boundedArea = instance.boundedArea, imagedata = null;
             
             instance.storageType = "document";
-            instance.setMidPoint([clickEvent.pageX, clickEvent.pageY]);
+            instance.setMidPoint([clickEvent.pageX, clickEvent.pageY], instance.storageType);
             instance.activity.execute.apply(instance, ["temp", clickEvent, instance.parent() !== "helper"]);
             imagedata = _DRAWING.TEMP.rowSet[0].dom.getContext("2d").getImageData(boundedArea.xC, boundedArea.yC, instance.size[0], instance.size[1]);
             instance.boundedArea.setData(true, imagedata);
@@ -50,13 +50,13 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
             if(proto.hasOwnProperty("onMouseOver")) {
                 proto.onMouseOver.call(proto, mouseOverEvent);
             }
-            proto.setMidPoint([mouseOverEvent.pageX, mouseOverEvent.pageY]);
+            proto.setMidPoint([mouseOverEvent.pageX, mouseOverEvent.pageY], emulator.currentProcessType);
             emulator.draw(mouseOverEvent);
         });
     },
-    setMidPoint: function(endPoint) {
+    setMidPoint: function(endPoint, storageType) {
         var startPoint = this.start;
-        var position = this.directedPosition(this.storageType);
+        var position = this.directedPosition(storageType);
         this.endPoint = endPoint;
         this.xDistance = (endPoint[0] - startPoint[0]); this.yDistance = (endPoint[1] - startPoint[1]);
         this.size = [Math.abs(this.xDistance), Math.abs(this.yDistance)];
@@ -97,5 +97,3 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
     },
     size: [0,0]
 });
-
-CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Element.prototype, CONVERTDRAWING.Helper.prototype);
