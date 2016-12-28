@@ -65,11 +65,13 @@ var _DOCUMENT = _DOCUMENT || {};
 
     CONVERTDRAWING.Line.prototype = {
         name: 'Line',
-        triggerMethod: 'click',
         ACTIVITY_NAME: 'create',
         ACTIVITY_TYPE: 'native',
         ACTIVITY_METHOD: 'draw',
-        storageType: "document"
+        storageType: "document",
+        triggerMethod: 'click',
+        bindMethod: 'mousemove',
+        releaseMethod: 'click',
     };
 
     CONVERTDRAWING.Line = _DOCUMENT.extend(CONVERTDRAWING.Line, CONVERTDRAWING.Element);

@@ -17,6 +17,8 @@ var _DOCUMENT = _DOCUMENT || {};
     };
 
     CONVERTDRAWING.Helper.prototype = jQuery.extend({
+        isStorage: true,
+        isProcess: true,
         ACTIVITY_NAME: '',
         ACTIVITY_TYPE: '',
         ACTIVITY_METHOD: '',

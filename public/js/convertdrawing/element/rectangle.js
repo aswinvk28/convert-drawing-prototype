@@ -10,7 +10,7 @@ var DOMSUPPORT = DOMSUPPORT || {};
 var _DRAWING = _DRAWING || {};
 var _DOCUMENT = _DOCUMENT || {};
 
-(function($, window) {
+(function($, window) { // Need UI for Rectangle to determine the angle of transformation or rotation before drawing in the context
     
     CONVERTDRAWING.Rectangle = function(startPoint, fillStyle) {
         var instance = this;
@@ -34,12 +34,14 @@ var _DOCUMENT = _DOCUMENT || {};
 
     CONVERTDRAWING.Rectangle.prototype = {
         name: 'Rectangle',
-        triggerMethod: 'click',
         ACTIVITY_NAME: 'create',
         ACTIVITY_TYPE: 'native',
         ACTIVITY_METHOD: 'draw',
         storageType: "document",
-        size: [16,16]
+        size: [16,16],
+        triggerMethod: 'click',
+        bindMethod: 'mousemove',
+        releaseMethod: 'click',
     };
 
     CONVERTDRAWING.Rectangle = _DOCUMENT.extend(CONVERTDRAWING.Rectangle, CONVERTDRAWING.Element);

@@ -12,7 +12,8 @@ var _DOCUMENT = _DOCUMENT || {};
         this.axis = options.axis; // 'X', 'Y'
         this.quadrant = options.quadrant; // 'A', 'S', 'T', 'C'
 
-        this.startPoint = startPoint;
+        this.start = startPoint;
+        this.point = startPoint;
 
         if(thickness) {
             this.thickness = thickness;
@@ -40,17 +41,21 @@ var _DOCUMENT = _DOCUMENT || {};
             return this.method;
         };
 
+        this.draw = function(event) {
+            this[this.getMethod()].call(this, event);
+        };
+
         var drawSingleDisconnected = function(event, thickness, extensionY, extensionX) {
             var position = this.directedPosition(this.currentProcessType);
             this.refContext.beginPath();
-            this.refContext.moveTo(position[0] + event.pageX, position[1] + this.startPoint[1]);
-            this.refContext.lineTo(position[0] + this.startPoint[0], position[1] + this.startPoint[1]);
-            this.refContext.lineTo(position[0] + this.startPoint[0] + extensionX, position[1] + this.startPoint[1] + thickness[1] + extensionY);
-            this.refContext.lineTo(position[0] + this.startPoint[0] + thickness[0] + extensionX, position[1] + this.startPoint[1] + thickness[1] + extensionY);
-            this.refContext.moveTo(position[0] + event.pageX, position[1] + this.startPoint[1]);
-            this.refContext.lineTo(position[0] + event.pageX, position[1] + this.startPoint[1] + thickness[1]);
-            this.refContext.lineTo(position[0] + this.startPoint[0] + thickness[0], position[1] + this.startPoint[1] + thickness[1]);
-            this.refContext.lineTo(position[0] + this.startPoint[0] + thickness[0] + extensionX, position[1] + this.startPoint[1] + thickness[1] + extensionY);
+            this.refContext.moveTo(position[0] + event.pageX, position[1] + this.start[1]);
+            this.refContext.lineTo(position[0] + this.start[0], position[1] + this.start[1]);
+            this.refContext.lineTo(position[0] + this.start[0] + extensionX, position[1] + this.start[1] + thickness[1] + extensionY);
+            this.refContext.lineTo(position[0] + this.start[0] + thickness[0] + extensionX, position[1] + this.start[1] + thickness[1] + extensionY);
+            this.refContext.moveTo(position[0] + event.pageX, position[1] + this.start[1]);
+            this.refContext.lineTo(position[0] + event.pageX, position[1] + this.start[1] + thickness[1]);
+            this.refContext.lineTo(position[0] + this.start[0] + thickness[0], position[1] + this.start[1] + thickness[1]);
+            this.refContext.lineTo(position[0] + this.start[0] + thickness[0] + extensionX, position[1] + this.start[1] + thickness[1] + extensionY);
             this.refContext.stroke();
             this.refContext.fill("evenodd");
         };
@@ -58,7 +63,8 @@ var _DOCUMENT = _DOCUMENT || {};
         this.drawClosed = function(event) {
             var position = this.directedPosition(this.currentProcessType);
             this.refContext.beginPath();
-            
+            this.refContext.rect(this.pivot[0], this.pivot[1], this.size[0], this.size[1]);
+            this.refContext.rect(this.pivot[0] + this.thickness[0], this.pivot[1] + this.thickness[1], this.size[0] - 2 * this.thickness[0], this.size[1] - 2 * this.thickness[1]);
             this.refContext.stroke();
             this.refContext.fill("evenodd");
         };
@@ -152,13 +158,13 @@ var _DOCUMENT = _DOCUMENT || {};
                 thickness[0] = this.thickness[0];
                 thickness[1] = -this.thickness[1];
             }
-            this.refContext.moveTo(position[0] + this.startPoint[0], position[1] + eventParam.pageY);
-            this.refContext.lineTo(position[0] + this.startPoint[0] + this.thickness[0], position[1] + this.startPoint[1]);
-            this.refContext.lineTo(position[0] + this.startPoint[0] + this.thickness[0], position[1] + this.startPoint[1] + this.thickness[1]);
+            this.refContext.moveTo(position[0] + this.start[0], position[1] + eventParam.pageY);
+            this.refContext.lineTo(position[0] + this.start[0] + this.thickness[0], position[1] + this.start[1]);
+            this.refContext.lineTo(position[0] + this.start[0] + this.thickness[0], position[1] + this.start[1] + this.thickness[1]);
             this.refContext.lineTo(position[0] + eventParam.pageX, position[1] + this.thickness[0]);
-            this.refContext.moveTo(position[0] + this.startPoint[0], position[1] + eventParam.pageY);
-            this.refContext.lineTo(position[0] + this.startPoint[0], position[1] + this.startPoint[1]);
-            this.refContext.lineTo(position[0] + event.pageX, position[1] + this.startPoint[1]);
+            this.refContext.moveTo(position[0] + this.start[0], position[1] + eventParam.pageY);
+            this.refContext.lineTo(position[0] + this.start[0], position[1] + this.start[1]);
+            this.refContext.lineTo(position[0] + event.pageX, position[1] + this.start[1]);
             this.refContext.closePath();
         };
 
@@ -168,16 +174,6 @@ var _DOCUMENT = _DOCUMENT || {};
 
         var drawTripleEnclosure = function(event) {
             var position = this.directedPosition(this.currentProcessType), eventParam = {}, thickness = [];
-            this.refContext.restore();
-            if(this.quadrant == "A") {
-                
-            } else if(this.quadrant == "S") {
-                this.refContext.rotate(90 * Math.PI / 2);
-            } else if(this.quadrant == "T") {
-                this.refContext.rotate(180 * Math.PI / 2);
-            } else if(this.quadrant == "C") {
-                this.refContext.rotate(270 * Math.PI / 2);
-            }
             this.refContext.beginPath();
             this.refContext.moveTo(position[0] + this.pivot[0], position[1] + this.pivot[1]);
             this.refContext.moveTo(position[0] + this.pivot[0], position[1] + this.size[1]);
@@ -193,13 +189,24 @@ var _DOCUMENT = _DOCUMENT || {};
         };
 
         this.drawTripleEnclosure = function(event) {
+            this.refContext.restore();
+            if(this.quadrant == "A") {
+                
+            } else if(this.quadrant == "S") {
+                this.refContext.rotate(90 * Math.PI / 2);
+            } else if(this.quadrant == "T") {
+                this.refContext.rotate(180 * Math.PI / 2);
+            } else if(this.quadrant == "C") {
+                this.refContext.rotate(270 * Math.PI / 2);
+            }
             drawTripleEnclosure.call(this, event);
         };
     };
 
     CONVERTDRAWING.Wall.prototype = {
         name: 'Wall',
-        triggerMethod: 'drag',
+        triggerMethod: 'mousedown',
+        bindMethod: 'mousemove',
         releaseMethod: 'mouseup',
         ACTIVITY_NAME: 'create',
         ACTIVITY_TYPE: 'native',
@@ -212,7 +219,11 @@ var _DOCUMENT = _DOCUMENT || {};
             var proto = this;
             $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event, thickness, properties) {
                 proto.setCanvasesToPosition();
-                var instance = new proto.definition([event.pageX, event.pageY], thickness, properties); // activity creation and drawing initiation
+                var instance = new proto.definition([event.pageX, event.pageY], thickness, {
+                    option: "Single Disconnected",
+                    axis: "X",
+                    quadrant: "A"
+                }); // activity creation and drawing initiation
                 var proto_uuid = proto.name + "_" + uuid.v1();
                 CONVERTDRAWING.active_element = proto_uuid;
                 if(instance.hasOwnProperty('on' + proto.triggerMethod + 'Start')) {
@@ -225,6 +236,45 @@ var _DOCUMENT = _DOCUMENT || {};
                 _WORKSPACE.ELEMENTS.List[proto_uuid] = instance;
             });
         },
+        bindPostEvents: function(preCallback, processType, prevEvent, postCallback) {
+            var proto = this;
+            // move to top
+            this.moveToTop("temp");
+            $(_DRAWING.UI.targetObject.dom).off(proto.releaseMethod + "." + proto.name);
+            $(_DRAWING.UI.targetObject.dom).on(proto.releaseMethod + "." + proto.name, function(clickEvent) {
+                var instance = _WORKSPACE.ELEMENTS.List[CONVERTDRAWING.active_element];
+                var boundedArea = instance.boundedArea, imagedata = null;
+                
+                instance.storageType = "document";
+                instance.setMidPoint([clickEvent.pageX, clickEvent.pageY], instance.storageType);
+                instance.activity.execute.apply(instance, ["temp", clickEvent, instance.parent() !== "helper"]);
+                imagedata = _DRAWING.TEMP.rowSet[0].dom.getContext("2d").getImageData(boundedArea.xC, boundedArea.yC, instance.size[0], instance.size[1]);
+                instance.boundedArea.setData(true, imagedata);
+                instance.viewPort().temp.rowSet[0].clearRect();
+                
+                // move to required order
+                proto.moveToRequiredOrder("temp");
+                
+                if(instance.hasOwnProperty('on' + proto.triggerMethod + 'Finish')) {
+                    instance['on' + proto.triggerMethod + 'Finish'].call(instance, clickEvent);
+                }
+                $(_DRAWING.UI.targetObject.dom).off(proto.bindMethod + proto.name);
+                // CONVERTDRAWING.Rectangle.prototype.bindEvents();
+            });
+        },
+        bindInteractions: function(preCallback, processType, prevEvent, postCallback) {
+            var proto = this;
+            var emulator = new CONVERTDRAWING.Emulator(_DRAWING.UI.targetObject.dom.getContext("2d"), proto);
+            $(_DRAWING.UI.targetObject.dom).off(proto.bindMethod + "." + proto.name);
+            $(_DRAWING.UI.targetObject.dom).on(proto.bindMethod + "." + proto.name, function(mouseOverEvent) {
+                proto.viewPort().temp.rowSet[0].clearRect();
+                if(proto.hasOwnProperty("onMouseOver")) {
+                    proto.onMouseOver.call(proto, mouseOverEvent);
+                }
+                proto.setMidPoint([mouseOverEvent.pageX, mouseOverEvent.pageY], emulator.currentProcessType);
+                emulator.draw(mouseOverEvent);
+            });
+        }
     };
 
     CONVERTDRAWING.Wall = _DOCUMENT.extend(CONVERTDRAWING.Wall, CONVERTDRAWING.Object);

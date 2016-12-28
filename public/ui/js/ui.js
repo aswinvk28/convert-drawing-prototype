@@ -32,20 +32,25 @@ var _DOCUMENT = _DOCUMENT || {};
     
     _WORKSPACE.ACTIVITYHISTORY = new _WORKSPACE.activityHistory();
 
-    $(_DRAWING.UI.canvasObject.dom).on('mousedown.Wall', function(event) {
-        $(_DRAWING.UI.canvasObject.dom).on('mousemove.Wall', function(event) {
-            event.type = 'drag.Wall';
-            $(_DRAWING.UI.canvasObject.dom).trigger(event, settings(proto.definition).getThickness(), jQuery.extend({
-                option: settings(proto.definition, true).getOption(),
-                axis: settings(proto.definition, true).getAxis(),
-                quadrant: settings(proto.definition, true).getQuadrant()
-            }, settings(proto.definition, true).getProperties()));
-        });
-    });
+    // $(_DRAWING.UI.canvasObject.dom).on('mousedown.Wall', function(event) {
+    //     $(_DRAWING.UI.canvasObject.dom).on('mousemove.Wall', function(event) {
+    //         event.type = 'drag.Wall';
+    //         /*$(_DRAWING.UI.canvasObject.dom).trigger(event, settings(proto.definition).getThickness(), jQuery.extend({
+    //             option: settings(proto.definition, true).getOption(),
+    //             axis: settings(proto.definition, true).getAxis(),
+    //             quadrant: settings(proto.definition, true).getQuadrant()
+    //         }, settings(proto.definition, true).getProperties()));*/
+    //         $(_DRAWING.UI.canvasObject.dom).trigger(event, [null, jQuery.extend({
+    //             option: "Single Disconnected",
+    //             axis: "X",
+    //             quadrant: "A"
+    //         }, {})]);
+    //     });
+    // });
 
-    $(_DRAWING.UI.canvasObject.dom).on('mouseup.Wall', function(event) {
-        $(_DRAWING.UI.canvasObject.dom).off('mousedown.Wall');
-    });
+    // $(_DRAWING.UI.canvasObject.dom).on('mouseup.Wall', function(event) {
+    //     $(_DRAWING.UI.canvasObject.dom).off('mousedown.Wall');
+    // });
     
 })(window, jQuery);
 
@@ -56,6 +61,8 @@ var currentState = "", instance, found = false;
     // CONVERTDRAWING.Point.prototype.bindEvents();
     // CONVERTDRAWING.Circle.prototype.bindEvents();
     // CONVERTDRAWING.Rectangle.prototype.bindEvents();
+    // CONVERTDRAWING.Wall.prototype.bindEvents();
+    CONVERTDRAWING.Door.prototype.bindEvents();
 
     $('.ui-element').click(function(event) {
         currentState = this;

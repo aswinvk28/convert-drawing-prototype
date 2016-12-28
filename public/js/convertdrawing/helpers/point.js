@@ -40,6 +40,7 @@ CONVERTDRAWING.Point = function(point) {
 
 CONVERTDRAWING.Point.prototype = {
     name: 'Point',
+    isProcess: false,
     triggerMethod: 'click',
     size: [16,16],
     ACTIVITY_NAME: 'create',

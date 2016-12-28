@@ -19,8 +19,8 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
         var proto = this;
         // move to top
         this.moveToTop("temp");
-        $(_DRAWING.UI.targetObject.dom).off(proto.triggerMethod + "." + proto.name);
-        $(_DRAWING.UI.targetObject.dom).on(proto.triggerMethod + "." + proto.name, function(clickEvent) {
+        $(_DRAWING.UI.targetObject.dom).off(proto.releaseMethod + "." + proto.name);
+        $(_DRAWING.UI.targetObject.dom).on(proto.releaseMethod + "." + proto.name, function(clickEvent) {
             var instance = _WORKSPACE.ELEMENTS.List[CONVERTDRAWING.active_element];
             var boundedArea = instance.boundedArea, imagedata = null;
             
@@ -37,15 +37,15 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
             if(instance.hasOwnProperty('on' + proto.triggerMethod + 'Finish')) {
                 instance['on' + proto.triggerMethod + 'Finish'].call(instance, clickEvent);
             }
-            $(_DRAWING.UI.targetObject.dom).off("mousemove." + proto.name);
+            $(_DRAWING.UI.targetObject.dom).off(proto.bindMethod + "." + proto.name);
             // CONVERTDRAWING.Rectangle.prototype.bindEvents();
         });
     },
     bindInteractions: function(preCallback, processType, prevEvent, postCallback) {
         var proto = this;
         var emulator = new CONVERTDRAWING.Emulator(_DRAWING.UI.targetObject.dom.getContext("2d"), proto);
-        $(_DRAWING.UI.targetObject.dom).off("mousemove." + proto.name);
-        $(_DRAWING.UI.targetObject.dom).on("mousemove." + proto.name, function(mouseOverEvent) {
+        $(_DRAWING.UI.targetObject.dom).off(proto.bindMethod + "." + proto.name);
+        $(_DRAWING.UI.targetObject.dom).on(proto.bindMethod + "." + proto.name, function(mouseOverEvent) {
             proto.viewPort().temp.rowSet[0].clearRect();
             if(proto.hasOwnProperty("onMouseOver")) {
                 proto.onMouseOver.call(proto, mouseOverEvent);
@@ -68,6 +68,37 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
         this.point = [this.boundedArea.pivot[0] + this.size[0] / 2, this.boundedArea.pivot[1] + this.size[1] / 2];
         this.setBoundedArea(this.storageType);
         return this;
+    },
+    getQuadrant: function(angle) {
+        var quadrant = '';
+        if(angle < 90) {
+            quadrant = 'A';
+        } else if(angle < 180) {
+            quadrant = 'S'
+        } else if(angle < 270) {
+            quadrant = 'T';
+        } else if(angle < 360) {
+            quadrant = 'C';
+        }
+        return quadrant;
+    },
+    setSlope: function() {
+        var angle;
+        if(this.xDistance == 0) {
+            angle = 0;
+        } else {
+            this.slope = this.yDistance / this.xDistance;
+            if(this.yDistance >= 0 && this.xDistance > 0) {
+                angle = Math.atan(this.slope) / (Math.PI/180);
+            } else if(this.yDistance >= 0 && this.xDistance < 0) {
+                angle = Math.atan(this.slope) / (Math.PI/180) + 90;
+            } else if(this.yDistance <= 0 && this.xDistance < 0) {
+                angle = Math.atan(this.slope) / (Math.PI/180) + 180;
+            } else if(this.yDistance <= 0 && this.xDistance > 0) {
+                angle = Math.atan(this.slope) / (Math.PI/180) + 270;
+            }
+        }
+        this.angle = Math.fround(angle);
     },
     setBoundedArea: function(processType) {
         var position = this.directedPosition(processType);

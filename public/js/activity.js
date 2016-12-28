@@ -94,7 +94,7 @@ _WORKSPACE.activity = function(name, type, method, operation) {
     
     this.execute = function(processType, event, storage) {
         instance.processType = processType;
-        
+        storage = instance.hasOwnProperty("isStorage") && instance.isStorage == true ? instance.isStorage : storage;
         /** Create reference attribute from the destination canvas */
         this.refContext = this[instance.processType + "Channel"]().dataTransfer.dest.dom.getContext("2d");
         if(instance.type) {
@@ -118,7 +118,7 @@ _WORKSPACE.activity = function(name, type, method, operation) {
     };
     
     this.executeNative = function(processType, event, storage) { // metadata to be determined earlier here
-        if(!!processType) {
+        if(!!processType && this.isProcess) {
             if(typeof this['create'] == "function") {
                 this['create'].call(this, event);
             }

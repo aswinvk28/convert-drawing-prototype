@@ -14,6 +14,22 @@ CONVERTDRAWING.Object = function() {
     return "object";
 };
 
-CONVERTDRAWING.Object.prototype = jQuery.extend(CONVERTDRAWING.Element.prototype, {
+CONVERTDRAWING.Object.prototype = {
+    setMidPoint: function(endPoint, storageType) {
+        this._setMidPoint.call(this, endPoint, storageType);
+        this.setSlope.call(this);
+        if(this.hasOwnProperty("setQuadrant")) {
+            this.setQuadrant.call(this);
+        }
+        this.dimensions[1] = Math.sqrt((this.size[0]) ^ 2 + (this.size[1]) ^ 2); // width
+    },
+    setSlope: function() {
+        this.yDistance = -this.yDistance;
+        this._setSlope.call(this);
+    }
+};
 
-});
+CONVERTDRAWING.Object.prototype._setMidPoint = CONVERTDRAWING.Element.prototype.setMidPoint;
+CONVERTDRAWING.Object.prototype._setSlope = CONVERTDRAWING.Element.prototype.setSlope;
+
+CONVERTDRAWING.Object.prototype = jQuery.extend(CONVERTDRAWING.Element.prototype, CONVERTDRAWING.Object.prototype);
