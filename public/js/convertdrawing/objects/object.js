@@ -16,16 +16,12 @@ CONVERTDRAWING.Object = function() {
 
 CONVERTDRAWING.Object.prototype = {
     setMidPoint: function(endPoint, storageType) {
-        this._setMidPoint.call(this, endPoint, storageType);
-        this.setSlope.call(this);
-        if(this.hasOwnProperty("setQuadrant")) {
-            this.setQuadrant.call(this);
+        this._setMidPoint(endPoint, storageType);
+        this.setSlope();
+        if(this.__proto__.hasOwnProperty("setQuadrant")) {
+            this.setQuadrant();
         }
         this.dimensions[1] = Math.sqrt((this.size[0]) ^ 2 + (this.size[1]) ^ 2); // width
-    },
-    setSlope: function() {
-        this.yDistance = -this.yDistance;
-        this._setSlope.call(this);
     }
 };
 

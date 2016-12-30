@@ -11,14 +11,23 @@ var _DRAWING = _DRAWING || {};
 var _DOCUMENT = _DOCUMENT || {};
 
 CONVERTDRAWING.Emulator = function(refContext, instance) {
+    var setInstance = function(instance) {
+        this.instance = jQuery.extend(this.instance, instance);
+        this.instance.prototype = jQuery.extend(this.instance.prototype, instance.prototype);
+    };
+    var setContext = function(refContext) {
+        this.instance.refContext = refContext;
+    };
     this.instance = new Object();
-    this.instance = jQuery.extend(this.instance, instance);
-    this.instance.prototype = jQuery.extend(this.instance.prototype, instance.prototype);
-    this.instance.refContext = refContext;
+    setInstance.call(this, instance);
+    setContext.call(this, refContext);
 
-    this.draw = function(event, refContext) {
+    this.draw = function(event, instance, refContext) {
+        if(instance) {
+            setInstance.call(this, instance);
+        }
         if(refContext) {
-            this.instance.refContext = refContext;
+            setContext.call(this, refContext);
         }
         this.instance.currentProcessType = this.currentProcessType;
         this.instance.draw(event);

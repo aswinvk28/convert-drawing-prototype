@@ -38,7 +38,7 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
                 instance['on' + proto.triggerMethod + 'Finish'].call(instance, clickEvent);
             }
             $(_DRAWING.UI.targetObject.dom).off(proto.bindMethod + "." + proto.name);
-            // CONVERTDRAWING.Rectangle.prototype.bindEvents();
+            proto.definition.prototype.bindEvents();
         });
     },
     bindInteractions: function(preCallback, processType, prevEvent, postCallback) {

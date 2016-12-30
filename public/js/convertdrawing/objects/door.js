@@ -9,17 +9,17 @@ var _DOCUMENT = _DOCUMENT || {};
     CONVERTDRAWING.Door = function(startPoint, options) {
         this.start = startPoint;
         this.point = startPoint;
-        this.setMidPoint(startPoint, this.processType);
         this.option = options.option; // "Out Left", "Out Right", "In Left", "In Right"
 
         this.draw = function(event) {
             var position = this.directedPosition(this.currentProcessType);
-            var apex = this.setApex(this.angle);
             this.refContext.beginPath();
-            this.refContext.rect(this.pivot[0], this.pivot[1], this.size[0], this.size[1]); // draw the rectangle base for the door
+            this.refContext.rect(this.pivot[0], this.pivot[1], this.size[0], this.thickness); // draw the rectangle base for the door
             // draw the arc
             var angleDirection = this.getRotationDirection();
-            this.refContext.arc(position[0] + this.endPoint[0], position[0] + this.endPoint[1], this.dimensions[1], 0, 90, angleDirection == "anticlockwise");
+            this.refContext.arc(position[0] + this.endPoint[0], position[0] + this.endPoint[1], this.size[0], Math.PI, Math.PI / 2, angleDirection == "anticlockwise");
+            this.refContext.moveTo(position[0] + this.endPoint[0], position[1] + this.endPoint[1]);
+            this.refContext.lineTo(position[0] + this.apex[0], position[1] + this.apex[1]);
             this.refContext.stroke();
             this.refContext.restore();
         };
@@ -52,11 +52,11 @@ var _DOCUMENT = _DOCUMENT || {};
             return rotation;
         },
         setApex: function(angle) {
-            var xAngleAppend = 0, yAngleAppend = 0, width = this.dimensions[1], rotation = this.getRotationDirection();
+            var xAngleAppend = 0, yAngleAppend = 0, width = this.size[0], rotation = this.getRotationDirection();
             if(rotation == "clockwise") {
                 xAngleAppend = yAngleAppend = Math.PI/2;
             } else if(rotation == "anticlockwise") {
-                xAngleAppend = yAngleAppend = 2 * Math.PI - Math.PI/2;
+                xAngleAppend = yAngleAppend = - Math.PI/2;
             }
             var xCoordinate = width * Math.cos(angle * Math.PI/180 + xAngleAppend), yCoordinate = width * Math.sin(angle * Math.PI/180 + yAngleAppend);
             this.apex = [xCoordinate + this.endPoint[0], yCoordinate + this.endPoint[1]]; // translate the context
@@ -78,7 +78,7 @@ var _DOCUMENT = _DOCUMENT || {};
         bindEvents: function() {
             var proto = this, startPoint = [100,100], instance, endPoint;
             $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event, thickness, properties) {
-                endPoint = [event.pageX, event.pageY];
+                endPoint = [340, 100];
                 proto.setCanvasesToPosition();
                 instance = new proto.definition(startPoint, {
                     option: "Out Left"
@@ -87,6 +87,9 @@ var _DOCUMENT = _DOCUMENT || {};
                 CONVERTDRAWING.active_element = proto_uuid;
                 if(instance.hasOwnProperty('on' + proto.triggerMethod + 'Start')) {
                     instance['on' + proto.triggerMethod + 'Start'].call(instance, event);
+                }
+                if(!thickness) {
+                    instance.thickness = instance.dimensions[2];
                 }
                 instance.isStorage = false;
                 instance.isProcess = false;
@@ -121,7 +124,7 @@ var _DOCUMENT = _DOCUMENT || {};
                 if(instance.hasOwnProperty('on' + proto.triggerMethod + 'Finish')) {
                     instance['on' + proto.triggerMethod + 'Finish'].call(instance, clickEvent);
                 }
-                $(_DRAWING.UI.targetObject.dom).off(proto.bindMethod + proto.name);
+                $(_DRAWING.UI.targetObject.dom).off(proto.bindMethod + "." + proto.name);
                 // CONVERTDRAWING.Rectangle.prototype.bindEvents();
             });
         },
@@ -134,8 +137,9 @@ var _DOCUMENT = _DOCUMENT || {};
                 if(proto.hasOwnProperty("onMouseOver")) {
                     proto.onMouseOver.call(proto, mouseOverEvent);
                 }
-                proto.setMidPoint([mouseOverEvent.pageX, mouseOverEvent.pageY], emulator.currentProcessType);
-                emulator.draw(mouseOverEvent);
+                proto.setMidPoint(proto.endPoint, emulator.currentProcessType);
+                var apex = proto.setApex(180 + proto.angle);
+                emulator.draw(mouseOverEvent, proto);
             });
         }
     };
