@@ -30,7 +30,7 @@ CONVERTDRAWING.Emulator = function(refContext, instance) {
             setContext.call(this, refContext);
         }
         this.instance.currentProcessType = this.currentProcessType;
-        this.instance.draw(event);
+        this.instance[this.instance.activity.method](event);
     };
 };
 

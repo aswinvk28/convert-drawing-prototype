@@ -12,7 +12,7 @@ var _DOCUMENT = _DOCUMENT || {};
 
 (function($, window) { // Need UI for Rectangle to determine the angle of transformation or rotation before drawing in the context
     
-    CONVERTDRAWING.Rectangle = function(startPoint, fillStyle) {
+    CONVERTDRAWING.FilledRectangle = function(startPoint, fillStyle) {
         var instance = this;
         this.start = startPoint;
         this.point = startPoint;
@@ -29,13 +29,14 @@ var _DOCUMENT = _DOCUMENT || {};
             this.refContext.moveTo(position[0] + this.start[0], position[1] + this.start[1]);
             this.refContext.rect(position[0] + this.start[0], position[1] + this.start[1], event.pageX - this.start[0], event.pageY - this.start[1]);
             this.refContext.stroke();
+            this.refContext.fill();
             this.refContext.restore();
             return this;
         };
     };
 
-    CONVERTDRAWING.Rectangle.prototype = {
-        name: 'Rectangle',
+    CONVERTDRAWING.FilledRectangle.prototype = {
+        name: 'FilledRectangle',
         ACTIVITY_NAME: 'create',
         ACTIVITY_TYPE: 'native',
         ACTIVITY_METHOD: 'draw',
@@ -46,6 +47,6 @@ var _DOCUMENT = _DOCUMENT || {};
         releaseMethod: 'click',
     };
 
-    CONVERTDRAWING.Rectangle = _DOCUMENT.extend(CONVERTDRAWING.Rectangle, CONVERTDRAWING.Element);
+    CONVERTDRAWING.FilledRectangle = _DOCUMENT.extend(CONVERTDRAWING.FilledRectangle, CONVERTDRAWING.Element);
     
 })(jQuery, window);

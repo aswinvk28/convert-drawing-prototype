@@ -8,6 +8,10 @@ router.get('/', function(req, res, next) {
     res.render('index');
 });
 
+router.get('/prototype', function(req, res, next) {
+    res.render('prototype');
+});
+
 router.get('/test/native/spec-runner', function(req, res, next) {
     res.render('native/specRunner');
 });

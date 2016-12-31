@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>canvas prototype</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <script type="text/javascript" src="js/lib/jquery.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div id="menubar" class="absolute" style="top:15px;left:20px">
+            <ul class="unstyled">
+                <li role="presentation"><a id="point" title="Point" class="btn btn-default ui-element" href="javascript:void(0)" name="point">Point</a></li>
+                <li role="presentation"><a id="line" title="Line" class="btn btn-default ui-element" href="javascript:void(0)" name="line">Line</a></li>
+                <li role="presentation"><a id="rectangle" title="Rectangle" class="btn btn-default ui-element" href="javascript:void(0)" name="rectangle">Rectangle</a></li>
+                <li role="presentation"><a id="filledrectangle" title="Rectangle Block" class="btn btn-default ui-element" href="javascript:void(0)" name="filledrectangle">Rectangle Block</a></li>
+            </ul>
+            <ul class="unstyled">
+                <li role="presentation"><a id="wall" title="Wall" class="btn btn-default ui-element">Wall</a></li>
+                <li role="presentation"><a id="door" title="Door" class="btn btn-default ui-element">Door</a></li>
+                <li role="presentation"><a id="text" title="Text" class="btn btn-default ui-element">Text</a></li>
+            </ul>
+            <div style="display:none">
+                <ul class="unstyled">
+                    <li role="presentation"><a id="split_object" title="Split Object" class="btn btn-default ui-element">Split Object</a></li>
+                    <li role="presentation"><a id="move" title="Move" class="btn btn-default ui-element">Move</a></li>
+                    <li role="presentation"><a id="cut" title="Cut" class="btn btn-default ui-element">Cut</a></li>
+                    <li role="presentation"><a id="cut" title="Cut" class="btn btn-default ui-element">Dimensioning</a></li>
+                </ul>
+                <ul class="unstyled">
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">Pan</a></li>
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">Zoom</a></li>
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">Group</a></li>
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">Join</a></li>
+                </ul>
+                <ul class="unstyled">
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">Chair</a></li>
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">Table</a></li>
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">PC</a></li>
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">Desk</a></li>
+                </ul>
+                <ul class="unstyled">
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">Power Outlet</a></li>
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">Bed</a></li>
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">Shelf</a></li>
+                    <li role="presentation"><a id="" title="" class="btn btn-default ui-element">WC</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="absolute" id="optionbar" style="top:15px;left:1480px;z-index:9999">
+            <ul class="unstyled">
+                <li role="presentation">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default" id="SVG">SVG</button>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu icon-dropdown wall-icons">
+                            <li><a href="#" data-value="Save Image">Save to Desktop</a></li>
+                            <li><a href="#" data-value="SVG Conversion">Convert to SVG</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="absolute" style="top: 15px; left: 450px; display:none; z-index:9999" id="option_panel">
+            <div class="btn-group">
+                <button type="button" class="btn btn-danger" id="wall_type_name">Wall Type</button>
+                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu icon-dropdown wall-icons">
+                    <li><a href="#" class="icon-wall-sd" data-value="Single Disconnected"></a></li>
+                    <li><a href="#" class="icon-wall-dd" data-value="Double Disconnected"></a></li>
+                    <li><a href="#" class="icon-wall-de" data-value="Double Enclosure"></a></li>
+                    <li><a class="icon-wall-te" href="#" data-value="Triple Enclosure"></a></li>
+                    <li><a href="#" class="icon-wall-closed" data-value="Closed"></a></li>
+                </ul>
+            </div>
+            <input name="option" id="wall_option" value="" type="hidden" />
+            <input type="text" name="thickness" id="thickness" placeholder="Enter Thickness" />
+        </div>
+        <div class="absolute" style="top: 15px; left: 450px; display:none; z-index:9999" id="display_panel">
+            <input name="option" id="door_option" value="" type="hidden" />
+            <div class="btn-group">
+                <button type="button" class="btn btn-danger" id="door_type_name">Door Type</button>
+                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu icon-dropdown door-icons">
+                    <li><a href="#" class="icon-door-ol" data-value="Out Left"></a></li>
+                    <li><a href="#" class="icon-door-or" data-value="Out Right"></a></li>
+                    <li><a href="#" class="icon-door-il" data-value="In Left"></a></li>
+                    <li><a class="icon-door-ir" href="#" data-value="In Right"></a></li>
+                </ul>
+            </div>
+            <a class="btn btn-default" id="start_point">Select Start Point</a>
+            <a class="btn btn-default" id="end_point">Select End Point</a>
+            <input type="text" name="thickness" id="door_thickness" placeholder="Enter Thickness" />
+        </div>
+        <div class="absolute" style="top: 15px; left: 450px; display:none; z-index:9999" id="text_panel">
+            <input type="text" name="text_entry" id="text_entry" placeholder="Enter Description" />
+            <button type="button" class="btn btn-default" id="text_submit">Submit</button>
+        </div>
+        <canvas id="document_decider" style="background-color:transparent;display:none"></canvas>
+        <div id="page_body" class="col-lg-12">
+            
+        </div>
+        <input type="hidden" id="object" name="object" />
+        <div id="domsupport">
+            <a class="tracking absolute" id="marker" onclick="triggerCoordinatedCanvas(event);" style="display:none"><img src="images/location-marker-32x32.png" id="marker_image" /></a>
+        </div>
+
+        <!-- All namespacing -->
+        <script type="text/javascript" src="/bower_components/pubsub.js/src/pubsub.js"></script>
+        <script type="text/javascript" src="/bower_components/node-uuid/uuid.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing.js"></script>
+        <script type="text/javascript" src="/js/workspace.js"></script>
+        
+        <!-- All wrappers -->
+        <script type="text/javascript" src="/js/metadata.js"></script>
+        <script type="text/javascript" src="/js/document.js"></script>
+        <script type="text/javascript" src="/js/dom.js"></script>
+        
+        <!-- All initialising -->
+        <script type="text/javascript" src="/js/viewport.js"></script>
+        <script type="text/javascript" src="/js/layout.js"></script>
+        <script type="text/javascript" src="/js/drawing.js"></script>
+        <script type="text/javascript" src="/js/activity.js"></script>
+        <script type="text/javascript" src="/ui/js/interactions.js"></script>
+        
+        <!-- All elements -->
+        <script type="text/javascript" src="/js/convertdrawing/helpers/helper.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/marker.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/point.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/emulator.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/element.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/line.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/circle.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/rectangle.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/filledrectangle.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/text.js"></script>
+        
+        <script type="text/javascript" src="/js/convertdrawing/objects/object.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/block/block.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/objects/wall.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/objects/door.js"></script>
+        
+        <script type="text/javascript" src="/ui/js/ui.js"></script>
+
+        <script type="text/javascript">
+            var result = null;
+            function settings(definition, instance) {
+                if(result) {
+                    return result;
+                }
+                var start_point = [];
+                var end_point = [];
+                var definition = definition, option = null, thickness = null, text = "Default";
+                var getThickness = function() {
+                    var number = new Number(thickness);
+                    return number.valueOf();
+                };
+                var setThickness = function(value) {
+                    thickness = value;
+                };
+                var setOption = function(value) {
+                    option = value;
+                };
+                var getOption = function() {
+                    return option;
+                };
+                var getAxis = function() {
+                    return "X";
+                };
+                var getQuadrant = function() {
+                    return "A";
+                };
+                var setStartPoint = function(point) {
+                    start_point = point;
+                };
+                var setEndPoint = function(point) {
+                    end_point = point;
+                };
+                var getStartPoint = function() {
+                    return start_point;
+                };
+                var getEndPoint = function() {
+                    return end_point;
+                };
+                var setText = function(value) {
+                    text = value;
+                };
+                var getText = function() {
+                    return text;
+                };
+                result = {
+                    getThickness: getThickness,
+                    setThickness: setThickness,
+                    getOption: getOption,
+                    getAxis: getAxis,
+                    getQuadrant: getQuadrant,
+                    getStartPoint: getStartPoint,
+                    getEndPoint: getEndPoint,
+                    setStartPoint: setStartPoint,
+                    setEndPoint: setEndPoint,
+                    setOption: setOption,
+                    setText: setText,
+                    getText: getText
+                };
+                return result;
+            }
+
+            $('#point').click(function(event) {
+                $('#object').val("Point");
+                $(_DRAWING.UI.canvasObject.dom).off("click");
+                $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+                $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+                $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+                CONVERTDRAWING.Point.prototype.bindEvents();
+            });
+            $('#line').click(function(event) {
+                $('#object').val("Line");
+                $(_DRAWING.UI.canvasObject.dom).off("click");
+                $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+                $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+                $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+                CONVERTDRAWING.Line.prototype.bindEvents();
+            });
+            $('#rectangle').click(function(event) {
+                $('#object').val("Rectangle");
+                $(_DRAWING.UI.canvasObject.dom).off("click");
+                $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+                $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+                $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+                CONVERTDRAWING.Rectangle.prototype.bindEvents();
+            });
+            $('#filledrectangle').click(function(event) {
+                $('#object').val("FilledRectangle");
+                $(_DRAWING.UI.canvasObject.dom).off("click");
+                $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+                $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+                $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+                CONVERTDRAWING.FilledRectangle.prototype.bindEvents();
+            });
+            $('#wall').click(function(event) {
+                $('#object').val("Wall");
+                $('#option_panel').show();
+            });
+            $('#door').click(function(event) {
+                $('#object').val("Door");
+                $('#display_panel').show();
+            });
+            $('#text').click(function(event) {
+                $('#object').val("Text");
+                $('#text_panel').show();
+                CONVERTDRAWING.Text.prototype.bindEvents();
+            });
+            $('body').keydown(function(event) {
+                if(event.keyCode == 27) {
+                    $('#object').val("");
+                    $('#start_point').removeClass("disabled");
+                    $('#end_point').removeClass("disabled");
+                    result = null;
+                    $(_DRAWING.UI.canvasObject.dom).off("click");
+                    $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+                    $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+                    $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+                    $(_DRAWING.UI.targetObject.dom).off("click");
+                    $(_DRAWING.UI.targetObject.dom).off("mousemove");
+                    $(_DRAWING.UI.targetObject.dom).off("mouseup");
+                    $(_DRAWING.UI.targetObject.dom).off("mousedown");
+                    var context = _DRAWING.UI.temp.rowSet[0].dom;
+                    $(context).off("click");
+                    $(context).off("mousemove");
+                    $(context).off("mouseup");
+                    $(context).off("mousedown");
+                    $('#display_panel').hide();
+                    $('#option_panel').hide();
+                    $('#text_panel').hide();
+                }
+            });
+            $('#start_point').click(function() {
+                var point = null, elem = this;
+                $(this).addClass("disabled");
+                $(_DRAWING.UI.canvasObject.dom).off("click");
+                $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+                $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+                $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+                $(_DRAWING.UI.canvasObject.dom).click(function(event) {
+                    point = [event.pageX, event.pageY];
+                    settings(CONVERTDRAWING.Door.prototype.definition).setStartPoint(point);
+                    $(elem).removeClass("disabled");
+                });
+            });
+            $('#end_point').click(function() {
+                $(this).addClass("disabled"), elem = this;
+                $(_DRAWING.UI.canvasObject.dom).off("click");
+                $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+                $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+                $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+                $(_DRAWING.UI.canvasObject.dom).click(function(event) {
+                    var start_point = settings(CONVERTDRAWING.Door.prototype.definition).getStartPoint();
+                    point = [event.pageX, start_point[1]];
+                    settings(CONVERTDRAWING.Door.prototype.definition).setEndPoint(point);
+                    settings(CONVERTDRAWING.Door.prototype.definition).setThickness($('#door_thickness').val());
+                    $(elem).removeClass("disabled");
+                    $(_DRAWING.UI.canvasObject.dom).off("click");
+                    $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+                    $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+                    $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+                    CONVERTDRAWING[$('#object').val()].prototype.bindEvents();
+                });
+            });
+            $('.wall-icons li a').click(function() {
+                $('#wall_option').val($(this).data("value"));
+                $('#wall_type_name').text($('#wall_option').val());
+                settings(CONVERTDRAWING.Wall.prototype.definition).setOption($('#wall_option').val());
+                settings(CONVERTDRAWING.Wall.prototype.definition).setThickness($('#thickness').val());
+                $(_DRAWING.UI.canvasObject.dom).off("click");
+                $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+                $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+                $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+                CONVERTDRAWING.Wall.prototype.bindEvents();
+            });
+            $('.door-icons li a').click(function() {
+                $(_DRAWING.UI.canvasObject.dom).off("click");
+                $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+                $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+                $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+                $('#door_option').val($(this).data("value"));
+                $('#door_type_name').text($('#door_option').val());
+                settings(CONVERTDRAWING.Door.prototype.definition).setOption($('#door_option').val());
+            });
+            $(_DRAWING.UI.canvasObject.dom).off("click");
+            $(_DRAWING.UI.canvasObject.dom).off("mousemove");
+            $(_DRAWING.UI.canvasObject.dom).off("mouseup");
+            $(_DRAWING.UI.canvasObject.dom).off("mousedown");
+        </script>
+    </body>
+</html>

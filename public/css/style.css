@@ -85,3 +85,63 @@ canvas.grid-canvas#canvas-grid-2_2 { /* space */
 canvas.grid-canvas#canvas-grid-2_3 { /* temp */
     z-index: 400;
 }
+.icon-wall-sd {
+    width: 38px;
+    height: 24px;
+    background-image: url(/images/sprites.png);
+    background-position: 0px 291px;
+}
+.icon-wall-dd {
+    width: 38px;
+    height: 32px;
+    background-image: url(/images/sprites.png);
+    background-position: 0px 256px;
+}
+.icon-wall-de {
+    width: 38px;
+    height: 32px;
+    background-image: url(/images/sprites.png);
+    background-position: -1px 215px;
+}
+.icon-wall-te {
+    width: 38px;
+    height: 32px;
+    background-image: url(/images/sprites.png);
+    background-position: -1px 173px;
+}
+.icon-wall-closed {
+    width: 38px;
+    height: 36px;
+    background-image: url(/images/sprites.png);
+    background-position: -1px 134px;
+}
+.icon-door-ol {
+    width: 45px;
+    height: 40px;
+    background-image: url(/images/sprites.png);
+    background-position: -62px 283px;
+}
+.icon-door-or {
+    width: 45px;
+    height: 40px;
+    background-image: url(/images/sprites.png);
+    background-position: -62px 235px;
+}
+.icon-door-il {
+    width: 45px;
+    height: 40px;
+    background-image: url(/images/sprites.png);
+    background-position: -62px 185px;
+}
+.icon-door-ir {
+    width: 45px;
+    height: 40px;
+    background-image: url(/images/sprites.png);
+    background-position: -62px 137px;
+}
+.icon-dropdown {
+    width: 50px;
+}
+.icon-dropdown li {
+    padding: 5px 5px;
+}

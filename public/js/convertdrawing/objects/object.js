@@ -21,7 +21,6 @@ CONVERTDRAWING.Object.prototype = {
         if(this.__proto__.hasOwnProperty("setQuadrant")) {
             this.setQuadrant();
         }
-        this.dimensions[1] = Math.sqrt((this.size[0]) ^ 2 + (this.size[1]) ^ 2); // width
     }
 };
 

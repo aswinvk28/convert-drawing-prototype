@@ -52,7 +52,6 @@ _WORKSPACE.preLayout = function(window, document) {
         uiC.style.position = docC.style.position = metaC.style.position = exportC.style.position = tempC.style.position = spaceC.style.position = "absolute";
         uiC.style.left = docC.style.left = metaC.style.left = exportC.style.left = tempC.style.left = spaceC.style.left = 0;
         uiC.style.top = docC.style.top = metaC.style.top = exportC.style.top = tempC.style.top = spaceC.style.top = 0;
-        uiC.style.backgroundColor = "#fffed6";
 
         var uiC_container = document.createElement("div"), 
             docC_container = document.createElement("div"),

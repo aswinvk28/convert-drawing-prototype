@@ -76,13 +76,13 @@ var _DOCUMENT = _DOCUMENT || {};
             return this.quadrant;
         },
         bindEvents: function() {
-            var proto = this, startPoint = [100,100], instance, endPoint;
-            $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event, thickness, properties) {
-                endPoint = [340, 100];
+            var proto = this, startPoint = settings(proto.definition, true).getStartPoint(), endPoint = settings(proto.definition, true).getEndPoint(), instance;
+            var thickness = settings(proto.definition).getThickness(), properties = {};
+            $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event) {
                 proto.setCanvasesToPosition();
-                instance = new proto.definition(startPoint, {
-                    option: "Out Left"
-                }); // activity creation and drawing initiation
+                instance = new proto.definition(startPoint, jQuery.extend({
+                    option: settings(proto.definition).getOption()
+                }, properties)); // activity creation and drawing initiation
                 var proto_uuid = proto.name + "_" + uuid.v1();
                 CONVERTDRAWING.active_element = proto_uuid;
                 if(instance.hasOwnProperty('on' + proto.triggerMethod + 'Start')) {

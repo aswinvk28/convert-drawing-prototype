@@ -217,13 +217,12 @@ var _DOCUMENT = _DOCUMENT || {};
         extension: 25,
         bindEvents: function() {
             var proto = this;
-            $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event, thickness, properties) {
+            var thickness = settings(proto.definition).getThickness(), option = settings(proto.definition).getOption(), properties = {axis: settings(proto.definition).getAxis(), quadrant: settings(proto.definition).getQuadrant()};
+            $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event) {
                 proto.setCanvasesToPosition();
-                var instance = new proto.definition([event.pageX, event.pageY], thickness, {
-                    option: "Single Disconnected",
-                    axis: "X",
-                    quadrant: "A"
-                }); // activity creation and drawing initiation
+                var instance = new proto.definition([event.pageX, event.pageY], thickness, jQuery.extend({
+                    option: option
+                }, properties)); // activity creation and drawing initiation
                 var proto_uuid = proto.name + "_" + uuid.v1();
                 CONVERTDRAWING.active_element = proto_uuid;
                 if(instance.hasOwnProperty('on' + proto.triggerMethod + 'Start')) {
