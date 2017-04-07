@@ -213,7 +213,7 @@ var _DOCUMENT = _DOCUMENT || {};
         ACTIVITY_METHOD: 'draw',
         storageType: "document",
         processType: "temp",
-        thickness: [25,25],
+        thickness: [6,6],
         extension: 25,
         bindEvents: function() {
             var proto = this;

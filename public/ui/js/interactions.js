@@ -1,3 +1,6 @@
+var PROCESS_CYCLE_UI = 1, PROCESS_CYCLE_DOCUMENT = 5, PROCESS_CYCLE_METADATA = 7, PROCESS_CYCLE_EXPORT = 9, PROCESS_CYCLE_TEMP = 15, PROCESS_CYCLE_SPACE = 21;
+var LIFECYCLE_CREATE = 1, LIFECYCLE_CLONE = 2, ELEMENT_CREATE = 3, ELEMENT_EDIT = 4, LIFECYCLE_REMOVE = 5;
+var BOUNDED_AREA_CREATE = 3, BOUNDED_AREA_EDIT = 4, BOUNDED_AREA_REMOVE = 5;
 var CONVERTDRAWING = CONVERTDRAWING || {};
 var DOMSUPPORT = DOMSUPPORT || {};
 var _WORKSPACE = _WORKSPACE || {};
@@ -5,6 +8,7 @@ var _DRAWING = _DRAWING || {};
 var _DOCUMENT = _DOCUMENT || {};
 
 _WORKSPACE.INTERACTIONS = {};
+_WORKSPACE.ELEMENT_REPOSITORY = {};
 _WORKSPACE.ELEMENTS = {};
 _WORKSPACE.GRID = {};
 _WORKSPACE.BOUNDEDAREA = {};
@@ -22,6 +26,10 @@ _WORKSPACE.GRID.getDimensions = function(point) {
     var absoluteX = point[0] / this.width;
 
     return new Array(Math.floor(absoluteY), Math.floor(absoluteX));
+};
+
+_WORKSPACE.GRID.getUUIDPath = function() {
+    return this.dimensions[0] + "_" + this.diumensions[1];
 };
 
 /**
@@ -106,7 +114,7 @@ _WORKSPACE.GRID.SearchElementsByPoint = function(event, storageType) {
     var found = false, Grid = null, Elements = null;
     found = _WORKSPACE.GRID.isPointInGrid(event, storageType);
     if(found) {
-        Grid = _WORKSPACE.GRID.Locate(storageType);
+        Grid = _WORKSPACE.GRID.Locate(event, storageType);
         Elements = Grid.findElement(event);
     }
     return Elements;
@@ -144,7 +152,7 @@ _WORKSPACE.GRID.SearchByElement = function(event, element) {
 /**
  * @event jQuery Event object
  * @type type of canvas
- * @return _WORKSPACE.ELEMENTS.Grid
+ * @return _WORKSPACE.GRID.Element
  */
 _WORKSPACE.GRID.Locate = function(event, type) {
     type = type || "ui";
@@ -154,7 +162,7 @@ _WORKSPACE.GRID.Locate = function(event, type) {
     var gridStart = [this.Size.height * (dimensions[0] - 1), this.Size.width * (dimensions[1] - 1)];
     var gridEnd = [this.Size.height * (dimensions[0]), this.Size.width * (dimensions[1])];
 
-    return new _WORKSPACE.ELEMENTS.Grid({dimensions: dimensions, start: gridStart, end: gridEnd, type: type});
+    return new _WORKSPACE.GRID.Element({dimensions: dimensions, start: gridStart, end: gridEnd, type: type});
 };
 
 /**
@@ -199,25 +207,50 @@ _WORKSPACE.INTERACTIONS.Pan = function(event) {
     
 };
 
-_WORKSPACE.ELEMENTS.Grid = function(object) {
-    jQuery.extend(this, object);
+_WORKSPACE.GRID.Element = function(object) {
 
+    function create() {
+        var gridData = _WORKSPACE.GRID.getUUIDPath();
+        this.uuid = new UUID(1, "ns:Grid", gridData);
+        var Grid = _WORKSPACE.GRID.List[this.uuid];
+        if(Grid == undefined) {
+            this.new = true;
+            _WORKSPACE.GRID.List[this.uuid] = this;
+        } else {
+            this.new = false;
+            jQuery.extend(Grid, this);
+            return Grid;
+        }
+    }
+
+    var Grid = create.apply(this);
+
+    if(this.new == false) {
+        return Grid;
+    }
+
+    /**
+     * Return the element if found using element filter
+     * @param element
+     * @param event
+     * @returns {*}
+     */
     this.spotElement = function(element, event) {
         var actual = _WORKSPACE.GRID.actualCoordinates(event, this.type), found = false, relativeX, relativeY, points = [];
         /** Found the point is within the bounded area */
-        if(actual[0] + event.pageX > element.boundedArea.xC && actual[1] + event.pageY > element.boundedArea.yC 
-        && actual[0] + event.pageX < element.boundedArea.xC + element.boundedArea.width && actual[1] + event.pageY < element.boundedArea.yC + elelment.boundedArea.height) {
+        if((actual[0] + event.pageX) > element.el.boundedArea.xC && (actual[1] + event.pageY) > element.el.boundedArea.yC
+        && (actual[0] + event.pageX) < (element.el.boundedArea.xC + element.el.boundedArea.width) && (actual[1] + event.pageY) < (element.el.boundedArea.yC + element.el.boundedArea.height)) {
             found = true;
         }
         /** Find whether the point touches the element */
         if(found) {
-            relativeX = actual[0] + event.pageX - element.boundedArea.xC, relativeY = actual[1] + event.pageY - element.boundedArea.yC;
+            relativeX = actual[0] + event.pageX - element.el.boundedArea.xC, relativeY = actual[1] + event.pageY - element.el.boundedArea.yC;
             points = _WORKSPACE.GRID.getPoints({
                 pageX: relativeX, 
                 pageY: relativeY
             });
             for(var index in points) {
-                if(element.boundedArea.imagedata[points[index][0] * point[index][1]] != 0) {
+                if(element.el.boundedArea.imagedata[points[index][0] * points[index][1]] != 0) {
                     return element;
                 }
             }
@@ -226,14 +259,246 @@ _WORKSPACE.ELEMENTS.Grid = function(object) {
         return false;
     };
 
+    /**
+     * Return the elements if found using coordinates
+     * @param event
+     */
     this.findElement = function(event) {
         var Grid = _WORKSPACE.GRID.Locate(event, this.type);
-        var Elements = _WORKSPACE.GRID.List[Grid.dimensions[0] + "_" + Grid.dimensions[1]]; /* object of type prefix_UUID: Object */
+        var Elements = _WORKSPACE.GRID.List[_WORKSPACE.Grid.getUUIDPath()].getElements(event); /* Get elements from object of type prefix_UUID: Object */
 
-        
+        var context = _DRAWING.UI[this.type].rowSet[0].dom.getContext("2d");
+        var found = _WORKSPACE.GRID.FindInCanvas(event, context), current = null, foundElements = new Object();
+        if(found && Elements.contains == true) {
+            for(var element in Elements) {
+                current = this.spotElement(Elements[element], event);
+                if(current !== false) {
+                    foundElements[Elements[element].uuid] = current;
+                }
+            }
+            return foundElements;
+        }
+        return false;
     };
 
+    /**
+     * Returns the elements available to the current Grid
+     */
+    this.getElements = function(event) {
+        return this.ELEMENTS;
+    };
+
+    /**
+     * Adds an element to grid elements
+     * @param element
+     */
+    this.addElement = function(element) {
+        if(this.ELEMENTS.contains == false) {
+            this.ELEMENTS.contains = true;
+        }
+        if(this.ELEMENTS.elements.hasOwnProperty(element.uuid) == undefined) {
+            this.ELEMENTS.elements[element.uuid] = {};
+        }
+        this.ELEMENTS.elements[element.uuid] = element;
+    };
+
+    /**
+     * Removes all the elements from the Grid with the same uuid
+     * @param element
+     * @returns {_WORKSPACE.GRID.Element}
+     */
+    this.removeElement = function(element) {
+        var uuid = element.uuid;
+        delete this.ELEMENTS.elements[uuid];
+        return this;
+    };
+
+    /**
+     * Get the elements ordered by weight
+     * @param event
+     */
+    this.getElementsByTop = function(event) {
+
+    };
+
+    this.ELEMENTS = {contains: false, elements: {}};
+
     return this;
+};
+
+_WORKSPACE.ELEMENTS.Element = function(object) {
+    this.version = 0;
+    object.e = this;
+    this.el = object;
+
+    function create() {
+        this.uuid = new UUID(1);
+        var Element = _WORKSPACE.ELEMENTS.List[this.uuid];
+        if(Element == undefined) {
+            this.new = true;
+            _WORKSPACE.ELEMENTS.List[this.uuid] = this;
+        } else {
+            this.new = false;
+            jQuery.extend(Element, this);
+            return Element;
+        }
+    }
+
+    var Element = create.apply(this);
+
+    if(this.new == false) {
+        return Element;
+    }
+
+    /**
+     * Get the Bounded Area for the element
+     */
+    this.getBoundedArea = function() {
+        return this.el.e.boundedArea.b;
+    };
+
+    /**
+     * Get the grid for the element
+     */
+    this.getGrid = function() {
+         var point = this.el.point;
+         var eventObject = {pageX: point[0], pageY: point[1]};
+         var Grid = new _WORKSPACE.GRID.Locate(eventObject, this.el.storageType);
+         return Grid;
+    };
+
+    this.incrementVersion = function() {
+        return ++this.version;
+    };
+};
+
+_WORKSPACE.BOUNDEDAREA.Element = function(object) {
+    object.b = this;
+    this.ba = object;
+
+    function create() {
+        var baData = this.ba.context.e.uuid;
+        this.uuid = new UUID(1, "ns:BoundedArea", baData);
+        var BoundedArea = _WORKSPACE.BOUNDEDAREA.List[this.uuid];
+        if(BoundedArea == false) {
+            this.new = true;
+            _WORKSPACE.BOUNDEDAREA.List[this.uuid] = this;
+        } else {
+            this.new = false;
+            jQuery.extend(BoundedArea, this);
+            return BoundedArea;
+        }
+    }
+
+    var BoundedArea = create.apply(this);
+
+    if(this.new == false) {
+        return BoundedArea;
+    }
+
+    /**
+     * Get Pivot Coordinates from the bounded area metadata
+     */
+    this.getPivotCoordinates = function() {
+
+    };
+
+    /**
+     * Get the element
+     * @returns {_WORKSPACE.ELEMENTS.Element|*}
+     */
+    this.getElement = function() {
+        return this.ba.context.e;
+    };
+};
+
+_WORKSPACE.ELEMENT_REPOSITORY.Singleton = function() {
+
+    this.ELEMENTS = {contains: false, elements: {}};
+    this.BOUNDED_AREA = {contains: false, elements: {}};
+
+    /**
+     * Adds the Convert Drawing Objects to the repository
+     * @param el
+     */
+    this.addElementToRepository = function(el, lifecycle_stage, uuid, replaceEl) {
+        var Element = null, ruuid = null;
+        if(lifecycle_stage == LIFECYCLE_CREATE) {
+            Element = new _WORKSPACE.ELEMENTS.Element(el);
+            ruuid = new UUID(1, "ns:RepositoryElement", el.name + "_" + Element.uuid);
+        } else if(lifecycle_stage == LIFECYCLE_CLONE && replaceEl != undefined) {
+            Element = jQuery.extend(true, el.e);
+            Element.incrementVersion();
+            Element.el = replaceEl;
+            ruuid = new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid);
+        } else if(lifecycle_stage == ELEMENT_CREATE && uuid != undefined) {
+            Element = _WORKSPACE.ELEMENTS.List[uuid];
+            Element.el = el;
+            ruuid = new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid);
+        } else if(lifecycle_stage == ELEMENT_EDIT) {
+            Element = _WORKSPACE.ELEMENTS.List[uuid];
+            Element.el = el;
+            Element.incrementVersion();
+            ruuid = new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid);
+        }
+        if(this.ELEMENTS.contains == false) {
+            this.ELEMENTS.contains = true;
+        }
+        this.ELEMENTS.elements[ruuid] = Element;
+    };
+
+    this.addBoundedAreaToRepository = function(ba, lifecycle_stage, uuid, replaceBa) {
+        var BoundedArea = null, ruuid = null;
+        if(lifecycle_stage == LIFECYCLE_CREATE) {
+            BoundedArea = new _WORKSPACE.BOUNDED_AREA.Element(el);
+            ruuid = new UUID(1, "ns:RepositoryElement", el.name + "_" + BoundedArea.uuid);
+        } else if(lifecycle_stage == LIFECYCLE_CLONE && replaceBa != undefined) {
+            BoundedArea = jQuery.extend(true, el.e);
+            BoundedArea.incrementVersion();
+            BoundedArea.el = replaceBa;
+            ruuid = new UUID(BoundedArea.version, "ns:RepositoryElement", el.name + "_" + BoundedArea.uuid);
+        } else if(lifecycle_stage == BOUNDED_AREA_CREATE && uuid != undefined) {
+            BoundedArea = _WORKSPACE.BOUNDED_AREA.List[uuid];
+            BoundedArea.el = el;
+            ruuid = new UUID(BoundedArea.version, "ns:RepositoryElement", el.name + "_" + BoundedArea.uuid);
+        } else if(lifecycle_stage == BOUNDED_AREA_EDIT) {
+            BoundedArea = _WORKSPACE.BOUNDED_AREA.List[uuid];
+            BoundedArea.incrementVersion();
+            BoundedArea.el = el;
+            ruuid = new UUID(BoundedArea.version, "ns:RepositoryElement", el.name + "_" + BoundedArea.uuid);
+        }
+        if(this.BOUNDED_AREA.contains == false) {
+            this.BOUNDED_AREA.contains = true;
+        }
+        this.BOUNDED_AREA.elements[ruuid] = BoundedArea;
+    };
+
+    /**
+     * Removes the recent version of the element from the repository
+     * @param element
+     * @returns {_WORKSPACE.ELEMENT_REPOSITORY.Singleton}
+     */
+    this.removeRecentVersion = function(element) {
+        var uuid = element.uuid;
+        this.ELEMENTS.elements[uuid].pop();
+        return this;
+    };
+
+
+
+};
+
+_WORKSPACE.ELEMENT_REPOSITORY.Factory = function() {
+
+};
+
+_WORKSPACE.ELEMENT_REPOSITORY.Factory.create = function() {
+    var ElementRepository = null;
+
+    return function() {
+        ElementRepository = new _WORKSPACE.ELEMENT_REPOSITORY.Singleton();
+        return ElementRepository;
+    };
 };
 
 (function() {
@@ -252,4 +517,4 @@ _WORKSPACE.ELEMENTS.Grid = function(object) {
         }
     };
 
-})();
+})();    
