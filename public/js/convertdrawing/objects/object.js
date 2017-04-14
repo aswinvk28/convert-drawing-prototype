@@ -15,13 +15,7 @@ CONVERTDRAWING.Object = function() {
 };
 
 CONVERTDRAWING.Object.prototype = {
-    setMidPoint: function(endPoint, storageType) {
-        this._setMidPoint(endPoint, storageType);
-        this.setSlope();
-        if(this.__proto__.hasOwnProperty("setQuadrant")) {
-            this.setQuadrant();
-        }
-    }
+
 };
 
 CONVERTDRAWING.Object.prototype._setMidPoint = CONVERTDRAWING.Element.prototype.setMidPoint;

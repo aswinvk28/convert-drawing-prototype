@@ -114,8 +114,7 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
         $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event) {
             proto.setCanvasesToPosition();
             var instance = new proto.definition([event.pageX, event.pageY]); // activity creation and drawing initiation
-            var proto_uuid = proto.name + "_" + uuid.v1();
-            CONVERTDRAWING.active_element = proto_uuid;
+
             if(instance.hasOwnProperty('on' + proto.triggerMethod + 'Start')) {
                 instance['on' + proto.triggerMethod + 'Start'].call(instance, event);
             }
@@ -123,8 +122,21 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
                 this.bindPostEvents.call(this, params);
                 this.bindInteractions.call(this, params);
             });
-            _WORKSPACE.ELEMENTS.List[proto_uuid] = instance;
+
+            var ElementRepository = _WORKSPACE.ELEMENT_REPOSITORY.Factory.create();
+            ElementRepository.addElementToRepository(instance, LIFECYCLE_CREATE, null, null);
+            CONVERTDRAWING.active_element = instance.e.uuid;
         });
     },
     size: [0,0]
 });
+
+CONVERTDRAWING.Element.prototype._setMidPoint = CONVERTDRAWING.Element.prototype.setMidPoint;
+
+CONVERTDRAWING.Element.prototype.setMidPoint = function(endPoint, storageType) {
+    this._setMidPoint(endPoint, storageType);
+    this.setSlope();
+    if(this.__proto__.hasOwnProperty("setQuadrant")) {
+        this.setQuadrant();
+    }
+};

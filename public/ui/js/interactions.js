@@ -22,14 +22,14 @@ _WORKSPACE.BOUNDEDAREA.List = {};
  * @return Array[row,column] 
  */
 _WORKSPACE.GRID.getDimensions = function(point) {
-    var absoluteY = point[1] / this.height;
-    var absoluteX = point[0] / this.width;
+    var absoluteY = point[1] / this.Size.height;
+    var absoluteX = point[0] / this.Size.width;
 
-    return new Array(Math.floor(absoluteY), Math.floor(absoluteX));
+    return new Array(Math.floor(absoluteY) + 1, Math.floor(absoluteX) + 1);
 };
 
 _WORKSPACE.GRID.getUUIDPath = function() {
-    return this.dimensions[0] + "_" + this.diumensions[1];
+    return this.dimensions[0] + "_" + this.dimensions[1];
 };
 
 /**
@@ -157,12 +157,18 @@ _WORKSPACE.GRID.SearchByElement = function(event, element) {
 _WORKSPACE.GRID.Locate = function(event, type) {
     type = type || "ui";
     var actual = _WORKSPACE.GRID.actualCoordinates(event, type);
-    var dimensions = this.getDimensions([actual[0] + event.pageX, actual[1] + event.pageY]);
+    var dimensions = this.getDimensions([event.pageX, event.pageY]);
 
     var gridStart = [this.Size.height * (dimensions[0] - 1), this.Size.width * (dimensions[1] - 1)];
     var gridEnd = [this.Size.height * (dimensions[0]), this.Size.width * (dimensions[1])];
 
-    return new _WORKSPACE.GRID.Element({dimensions: dimensions, start: gridStart, end: gridEnd, type: type});
+    var parameters = {dimensions: dimensions, start: gridStart, end: gridEnd, type: type};
+    var gridUuid = _WORKSPACE.GRID.getUUIDPath.call(parameters);
+
+    if(gridUuid) {
+        return _WORKSPACE.GRID.List[gridUuid];
+    }
+    return new _WORKSPACE.GRID.Element(parameters);
 };
 
 /**
@@ -208,17 +214,18 @@ _WORKSPACE.INTERACTIONS.Pan = function(event) {
 };
 
 _WORKSPACE.GRID.Element = function(object) {
+    var GridInstance = this;
+    GridInstance = jQuery.extend(GridInstance, object);
 
     function create() {
-        var gridData = _WORKSPACE.GRID.getUUIDPath();
+        var gridData = _WORKSPACE.GRID.getUUIDPath.call(this);
         this.uuid = new UUID(1, "ns:Grid", gridData);
         var Grid = _WORKSPACE.GRID.List[this.uuid];
         if(Grid == undefined) {
             this.new = true;
-            _WORKSPACE.GRID.List[this.uuid] = this;
+            _WORKSPACE.GRID.List[this.uuid] = GridInstance;
         } else {
             this.new = false;
-            jQuery.extend(Grid, this);
             return Grid;
         }
     }
@@ -265,7 +272,8 @@ _WORKSPACE.GRID.Element = function(object) {
      */
     this.findElement = function(event) {
         var Grid = _WORKSPACE.GRID.Locate(event, this.type);
-        var Elements = _WORKSPACE.GRID.List[_WORKSPACE.Grid.getUUIDPath()].getElements(event); /* Get elements from object of type prefix_UUID: Object */
+        var gridUuid = _WORKSPACE.Grid.getUUIDPath.call(this);
+        var Elements = _WORKSPACE.GRID.List[gridUuid].getElements(event); /* Get elements from object of type prefix_UUID: Object */
 
         var context = _DRAWING.UI[this.type].rowSet[0].dom.getContext("2d");
         var found = _WORKSPACE.GRID.FindInCanvas(event, context), current = null, foundElements = new Object();
@@ -327,19 +335,21 @@ _WORKSPACE.GRID.Element = function(object) {
 };
 
 _WORKSPACE.ELEMENTS.Element = function(object) {
-    this.version = 0;
+    this.version = 1;
+    this.previousUuid = null;
+    this.previousRuuid = null;
     object.e = this;
     this.el = object;
 
     function create() {
-        this.uuid = new UUID(1);
+        var date = new Date();
+        this.uuid = new UUID(1, "ns:Element", this.el.name + "_" + date.getTime());
         var Element = _WORKSPACE.ELEMENTS.List[this.uuid];
         if(Element == undefined) {
             this.new = true;
             _WORKSPACE.ELEMENTS.List[this.uuid] = this;
         } else {
             this.new = false;
-            jQuery.extend(Element, this);
             return Element;
         }
     }
@@ -354,7 +364,7 @@ _WORKSPACE.ELEMENTS.Element = function(object) {
      * Get the Bounded Area for the element
      */
     this.getBoundedArea = function() {
-        return this.el.e.boundedArea.b;
+        return this.el.boundedArea.b;
     };
 
     /**
@@ -363,12 +373,39 @@ _WORKSPACE.ELEMENTS.Element = function(object) {
     this.getGrid = function() {
          var point = this.el.point;
          var eventObject = {pageX: point[0], pageY: point[1]};
-         var Grid = new _WORKSPACE.GRID.Locate(eventObject, this.el.storageType);
+         var Grid = _WORKSPACE.GRID.Locate(eventObject, this.el.storageType);
          return Grid;
     };
 
     this.incrementVersion = function() {
         return ++this.version;
+    };
+
+    /**
+     *
+     * Sets the Bounded Area
+     * @param b _WORKSPACE.BOUNDEDAREA.Element
+     */
+    this.setBoundedArea = function(b) {
+        this.el = b.ba.context;
+    };
+
+    /**
+     * Gets the Bounded Area from the UUID
+     */
+    this.getBoundedAreaGrid = function() {
+        var BAruuid = new UUID(1, "ns:RepositoryElement", this.el.name + "_" + this.uuid);
+        return _WORKSPACE.ELEMENT_REPOSITORY.BOUNDED_AREA.elements[BAruuid];
+    };
+
+    this.setUuid = function() {
+        var date = new Date();
+        this.previousUuid = this.uuid;
+        this.uuid = new UUID(this.version, "ns:Element", this.el.name + "_" + date.getTime());
+    };
+
+    this.setruuid = function(ruuid) {
+        this.previousRuuid = ruuid;
     };
 };
 
@@ -385,7 +422,6 @@ _WORKSPACE.BOUNDEDAREA.Element = function(object) {
             _WORKSPACE.BOUNDEDAREA.List[this.uuid] = this;
         } else {
             this.new = false;
-            jQuery.extend(BoundedArea, this);
             return BoundedArea;
         }
     }
@@ -427,8 +463,11 @@ _WORKSPACE.ELEMENT_REPOSITORY.Singleton = function() {
             Element = new _WORKSPACE.ELEMENTS.Element(el);
             ruuid = new UUID(1, "ns:RepositoryElement", el.name + "_" + Element.uuid);
         } else if(lifecycle_stage == LIFECYCLE_CLONE && replaceEl != undefined) {
+            var previousRuuid = new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid);
             Element = jQuery.extend(true, el.e);
             Element.incrementVersion();
+            Element.setUuid();
+            Element.setruuid(previousRuuid);
             Element.el = replaceEl;
             ruuid = new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid);
         } else if(lifecycle_stage == ELEMENT_CREATE && uuid != undefined) {
@@ -441,6 +480,7 @@ _WORKSPACE.ELEMENT_REPOSITORY.Singleton = function() {
             Element.incrementVersion();
             ruuid = new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid);
         }
+        Element.ruuid = ruuid;
         if(this.ELEMENTS.contains == false) {
             this.ELEMENTS.contains = true;
         }
@@ -450,22 +490,20 @@ _WORKSPACE.ELEMENT_REPOSITORY.Singleton = function() {
     this.addBoundedAreaToRepository = function(ba, lifecycle_stage, uuid, replaceBa) {
         var BoundedArea = null, ruuid = null;
         if(lifecycle_stage == LIFECYCLE_CREATE) {
-            BoundedArea = new _WORKSPACE.BOUNDED_AREA.Element(el);
-            ruuid = new UUID(1, "ns:RepositoryElement", el.name + "_" + BoundedArea.uuid);
+            BoundedArea = new _WORKSPACE.BOUNDED_AREA.Element(ba);
+            ruuid = new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid);
         } else if(lifecycle_stage == LIFECYCLE_CLONE && replaceBa != undefined) {
-            BoundedArea = jQuery.extend(true, el.e);
-            BoundedArea.incrementVersion();
-            BoundedArea.el = replaceBa;
-            ruuid = new UUID(BoundedArea.version, "ns:RepositoryElement", el.name + "_" + BoundedArea.uuid);
+            BoundedArea = jQuery.extend(true, ba.b);
+            BoundedArea.ba = replaceBa;
+            ruuid = new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid);
         } else if(lifecycle_stage == BOUNDED_AREA_CREATE && uuid != undefined) {
             BoundedArea = _WORKSPACE.BOUNDED_AREA.List[uuid];
-            BoundedArea.el = el;
-            ruuid = new UUID(BoundedArea.version, "ns:RepositoryElement", el.name + "_" + BoundedArea.uuid);
+            BoundedArea.ba = ba;
+            ruuid = new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid);
         } else if(lifecycle_stage == BOUNDED_AREA_EDIT) {
             BoundedArea = _WORKSPACE.BOUNDED_AREA.List[uuid];
-            BoundedArea.incrementVersion();
-            BoundedArea.el = el;
-            ruuid = new UUID(BoundedArea.version, "ns:RepositoryElement", el.name + "_" + BoundedArea.uuid);
+            BoundedArea.ba = ba;
+            ruuid = new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid);
         }
         if(this.BOUNDED_AREA.contains == false) {
             this.BOUNDED_AREA.contains = true;
@@ -484,8 +522,6 @@ _WORKSPACE.ELEMENT_REPOSITORY.Singleton = function() {
         return this;
     };
 
-
-
 };
 
 _WORKSPACE.ELEMENT_REPOSITORY.Factory = function() {
@@ -496,6 +532,9 @@ _WORKSPACE.ELEMENT_REPOSITORY.Factory.create = function() {
     var ElementRepository = null;
 
     return function() {
+        if(ElementRepository != null) {
+            return ElementRepository;
+        }
         ElementRepository = new _WORKSPACE.ELEMENT_REPOSITORY.Singleton();
         return ElementRepository;
     };
@@ -510,8 +549,8 @@ _WORKSPACE.ELEMENT_REPOSITORY.Factory.create = function() {
         totalHeight: _WORKSPACE.PRELAYOUT.totalHeight,
         multiplier: 7,
         spread: 4,
-        gridColumn: Math.ceil(this.totalWidth / this.width),
-        gridRow: Math.ceil(this.totalHeight / this.height),
+        gridColumn: Math.ceil(_WORKSPACE.PRELAYOUT.totalWidth / _WORKSPACE.PRELAYOUT.canvasWidth),
+        gridRow: Math.ceil(_WORKSPACE.PRELAYOUT.totalHeight / _WORKSPACE.PRELAYOUT.canvasHeight),
         coordinates: function(gridColumn, gridRow) { /* return Array */
 
         }

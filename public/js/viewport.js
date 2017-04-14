@@ -34,6 +34,9 @@ _WORKSPACE.viewPort = function(params, channel) {
     
     this.metadata.appendRow(this.document).appendRow(this.space).appendRow(this.export);
     this.metadata.prependRow(this.export);
+
+    this.canvasObject = params[0];
+    this.targetObject = params[0];
     
     this.constructor = viewPort;
     

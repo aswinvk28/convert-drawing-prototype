@@ -19,9 +19,9 @@ var _DOCUMENT = _DOCUMENT || {};
         this.setMidPoint = function(endPoint) {
             var startPoint = this.start;
             this.endPoint = endPoint;
-            var xDistance = (endPoint[0] - startPoint[0]), yDistance = (endPoint[1] - startPoint[1]);
-            var angle = (xDistance != 0) ? Math.atan(yDistance / xDistance) : Math.PI / 2;
-            this.size = [Math.abs(xDistance), Math.abs(yDistance)];
+            this.xDistance = (endPoint[0] - startPoint[0]); this.yDistance = (endPoint[1] - startPoint[1]);
+            this.size = [Math.abs(this.xDistance), Math.abs(this.yDistance)];
+            this.angle = (this.xDistance != 0) ? Math.atan(this.yDistance / this.xDistance) : Math.PI / 2;
             this.boundedArea
                     .setPivot((startPoint[0] < endPoint[0] ? startPoint[0] : endPoint[0]), (startPoint[1] < endPoint[1] ? startPoint[1] : endPoint[1]));
 
@@ -72,6 +72,7 @@ var _DOCUMENT = _DOCUMENT || {};
         triggerMethod: 'click',
         bindMethod: 'mousemove',
         releaseMethod: 'click',
+        splitType: [SPLIT_TYPE_POINT]
     };
 
     CONVERTDRAWING.Line = _DOCUMENT.extend(CONVERTDRAWING.Line, CONVERTDRAWING.Element);

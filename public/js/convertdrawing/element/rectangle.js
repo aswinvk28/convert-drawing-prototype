@@ -44,6 +44,7 @@ var _DOCUMENT = _DOCUMENT || {};
         triggerMethod: 'click',
         bindMethod: 'mousemove',
         releaseMethod: 'click',
+        splitType: [SPLIT_TYPE_LINE, SPLIT_TYPE_SLANT]
     };
 
     CONVERTDRAWING.Rectangle = _DOCUMENT.extend(CONVERTDRAWING.Rectangle, CONVERTDRAWING.Element);
