@@ -2,6 +2,7 @@
  * Created by aswin.vijayakumar on 10/04/2017.
  */
 
+var INTERSECTION_CONSTRAINT_POINT = "point", INTERSECTION_CONSTRAINT_PATH = "path", INTERSECTION_CONSTRAINT_CONTOUR = "contour", INTERSECTION_CONSTRAINT_MESH = "mesh";
 var _WORKSPACE = _WORKSPACE || {};
 var CONVERTDRAWING = CONVERTDRAWING || {};
 var DOMSUPPORT = DOMSUPPORT || {};
@@ -115,6 +116,22 @@ CONVERTDRAWING.Intersection = function() {
     };
 
     var CBezierToCBezierPoint = function(curve_first, curve_second) {
+
+    };
+
+    var FlangeIntersection = function(curve_first, curve_second) {
+
+        moveSpecification = function(control_point) {
+
+        };
+
+    };
+
+    var ConnectorIntersection = function(curve_first, curve_second) {
+
+        moveSpecification = function(control_point) {
+
+        };
 
     };
 
