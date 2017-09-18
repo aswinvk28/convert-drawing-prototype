@@ -17,29 +17,91 @@ _WORKSPACE.GRID.List = {};
 _WORKSPACE.ELEMENTS.List = {};
 _WORKSPACE.BOUNDEDAREA.List = {};
 
-/** 
+/**
  * @point Array
- * @return Array[row,column] 
+ * @return Array[row,column]
  */
 _WORKSPACE.GRID.getDimensions = function(point) {
-    var absoluteY = point[1] / this.Size.height;
     var absoluteX = point[0] / this.Size.width;
+    var absoluteY = point[1] / this.Size.height;
 
     return new Array(Math.floor(absoluteY) + 1, Math.floor(absoluteX) + 1);
 };
 
-_WORKSPACE.GRID.getUUIDPath = function() {
-    return this.dimensions[0] + "_" + this.dimensions[1];
+/**
+ * A globals functions to define the generation of Grid UUID
+ */
+GLOBALS.GridGenerate = (function() {
+    var gridUuid = {};
+    return function() {
+        var getGridUUID = function(gridPath) {
+            return gridUuid.hasOwnProperty(gridPath) ? gridUuid[gridPath] : false;
+        };
+        var setGridUUID = function(gridPath) {
+            var uuid = new UUID(1, "ns:Grid", gridPath);
+            gridUuid[gridPath] = uuid.toString();
+        };
+        return {
+            getGridUUID: getGridUUID,
+            setGridUUID: setGridUUID
+        };
+    };
+}());
+
+GLOBALS.getElementRepository = function() {
+    return (_WORKSPACE.ELEMENT_REPOSITORY.Factory.create())();
 };
 
 /**
- * @context Document, Metadata, etc. context
- * @return Array
+ * Returns the UUID Path for a grid
+ * @param path
+ * @returns {string}
  */
+_WORKSPACE.GRID.getUUIDPath = function(path) {
+    var GridGenerate = GLOBALS.GridGenerate();
+    var gridPath = this.dimensions[0] + "_" + this.dimensions[1], gridUUID = null;
+    if(path == true) {
+        if(!GridGenerate.getGridUUID(gridPath)) {
+            GridGenerate.setGridUUID(gridPath);
+        }
+        return GridGenerate.getGridUUID(gridPath);
+    }
+    return gridPath;
+};
+
+// /**
+//  * @context Document, Metadata, etc. context
+//  * @return Array
+//  */
+// _WORKSPACE.GRID.getPoints = function(remove) {
+//     var points = {};
+//     if(remove === true) {
+//         points = {};
+//         return true;
+//     } else if(remove === false) {
+//         return points;
+//     }
+//     return function(index) {
+//         var x = index % (_WORKSPACE.GRID.Size.spread + 1), y = Math.round(index / (_WORKSPACE.GRID.Size.spread + 1));
+//         points[x + "_" + y] = {"x": x, "y": y};
+//         return points[x + "_" + y];
+//     };
+// };
+
 _WORKSPACE.GRID.getPoints = function(event) {
-    var points = [];
-    for(var i = event.pageX - (this.Size.spread - 1); i <= event.pageX + (this.Size.spread - 1); i++) {
-        for(var j = event.pageY - (this.Size.spread - 1); j <= event.pageY + (this.Size.spread - 1); j++) {
+    var points = [], i = null, ilimit = null, jlimit = null;
+    if(event.pageX <= 2*this.Size.spread) {
+        i = event.pageX, ilimit = event.pageX + (2*this.Size.spread);
+    } else {
+        i = event.pageX - (this.Size.spread - 1), ilimit = event.pageX + (this.Size.spread - 1);
+    }
+    if(event.pageY <= 2*this.Size.spread) {
+        j = event.pageY, jlimit = event.pageX + (2*this.Size.spread);
+    } else {
+        j = event.pageY - (this.Size.spread - 1), jlimit = event.pageX + (this.Size.spread - 1);
+    }
+    for(; i <= ilimit; i++) {
+        for(; j <= jlimit; j++) {
             points.push([i,j]);
         }
     }
@@ -62,6 +124,16 @@ _WORKSPACE.GRID.findContext = function(context) {
         type = "space";
     }
     return type;
+};
+
+_WORKSPACE.GRID.getContext = function(processType) {
+    var context = null;
+    if(processType == "ui") {
+        context = _DRAWING.UI.canvasObject.dom.getContext("2d");
+    } else {
+        context = _DRAWING.UI[processType].rowSet[0].dom.getContext("2d");
+    }
+    return context;
 };
 
 _WORKSPACE.GRID.getEventType = function(event) {
@@ -87,27 +159,24 @@ _WORKSPACE.GRID.getEventType = function(event) {
 };
 
 _WORKSPACE.GRID.isPointInGrid = function(event, processType) {
-    var found;
+    var found, context = _WORKSPACE.GRID.getContext(processType);
     if(!event.target) {
         event.target = _WORKSPACE.ELEMENTS.List[CONVERTDRAWING.active_element];
     }
     if(event.type == "mouseover" || event.type == "mouseleave" || event.type == "mousedown" || event.type == "mouseup") {
-        found = _WORKSPACE.GRID.FindInCurrent(event, _DRAWING.UI[processType].rowSet[0].dom.getContext("2d"));
+        found = _WORKSPACE.GRID.FindInCurrent(event, context);
         if(!found) {
-            found = _WORKSPACE.GRID.FindInCanvas(event, _DRAWING.UI[processType].rowSet[0].dom.getContext("2d"));
+            found = _WORKSPACE.GRID.FindInCanvas(event, context);
         }
     } else if(event.type == "click" || event.type == "mouseover" || event.type == "mouseenter" || event.type == "mousemove") {
-        found = _WORKSPACE.GRID.FindInCanvas(event, _DRAWING.UI[processType].rowSet[0].dom.getContext("2d"));
+        found = _WORKSPACE.GRID.FindInCanvas(event, context);
     }
     return found;
 };
 
 _WORKSPACE.GRID.actualCoordinates = function(event, type) {
     var type = !type ? _WORKSPACE.GRID.findContext(event.helper.viewContext()) : type;
-    if(type !== "" && type !== "ui") {
-        return CONVERTDRAWING.Helper.prototype.directedPosition(type);
-    }
-    return [_DRAWING.UI.canvasObject.boundedArea.xC, _DRAWING.UI.canvasObject.boundedArea.yC];
+    return CONVERTDRAWING.Helper.prototype.directedPosition(type);
 };
 
 _WORKSPACE.GRID.SearchElementsByPoint = function(event, storageType) {
@@ -121,7 +190,7 @@ _WORKSPACE.GRID.SearchElementsByPoint = function(event, storageType) {
 };
 
 // _WORKSPACE.GRID.SearchBoundedAreasByPoint = function() {
-    
+
 // };
 
 // _WORKSPACE.GRID.SearchElementsByBoundedArea = function() {
@@ -129,18 +198,20 @@ _WORKSPACE.GRID.SearchElementsByPoint = function(event, storageType) {
 // };
 
 // _WORKSPACE.GRID.SearchBoundedAreasByBoundedArea = function() {
-    
+
 // };
 
 /**
- * 
+ * Searches the grid by the drawing element
+ * @param [$.Event, CONVERTDRAWING.Element]
+ * @returns _WORKSPACE.ELEMENTS.Element
  */
 _WORKSPACE.GRID.SearchByElement = function(event, element) {
     var found = false, Grid = null, Element = null;
     found = _WORKSPACE.GRID.isPointInGrid(event, element.storageType);
     if(found) {
         Grid = _WORKSPACE.GRID.Locate(event, element.storageType);
-        Element = Grid.spotElement(element, event);
+        Element = Grid.spotElement(element.e, event);
     }
     return Element;
 };
@@ -156,16 +227,15 @@ _WORKSPACE.GRID.SearchByElement = function(event, element) {
  */
 _WORKSPACE.GRID.Locate = function(event, type) {
     type = type || "ui";
-    var actual = _WORKSPACE.GRID.actualCoordinates(event, type);
     var dimensions = this.getDimensions([event.pageX, event.pageY]);
 
-    var gridStart = [this.Size.height * (dimensions[0] - 1), this.Size.width * (dimensions[1] - 1)];
-    var gridEnd = [this.Size.height * (dimensions[0]), this.Size.width * (dimensions[1])];
+    var gridStart = [this.Size.width * (dimensions[0] - 1), this.Size.height * (dimensions[1] - 1)];
+    var gridEnd = [this.Size.width * (dimensions[0]), this.Size.height * (dimensions[1])];
 
     var parameters = {dimensions: dimensions, start: gridStart, end: gridEnd, type: type};
-    var gridUuid = _WORKSPACE.GRID.getUUIDPath.call(parameters);
+    var gridUuid = _WORKSPACE.GRID.getUUIDPath.call(parameters, true);
 
-    if(gridUuid) {
+    if(_WORKSPACE.GRID.List.hasOwnProperty(gridUuid)) {
         return _WORKSPACE.GRID.List[gridUuid];
     }
     return new _WORKSPACE.GRID.Element(parameters);
@@ -198,19 +268,19 @@ _WORKSPACE.GRID.FindInCurrent = function(event, context) {
 };
 
 _WORKSPACE.INTERACTIONS.Select = function(element, event) {
-    
+
 };
 
 _WORKSPACE.INTERACTIONS.Move = function(element, event) {
-    
+
 };
 
 _WORKSPACE.INTERACTIONS.Zoom = function(event) {
-    
+
 };
 
 _WORKSPACE.INTERACTIONS.Pan = function(event) {
-    
+
 };
 
 _WORKSPACE.GRID.Element = function(object) {
@@ -218,14 +288,14 @@ _WORKSPACE.GRID.Element = function(object) {
     GridInstance = jQuery.extend(GridInstance, object);
 
     function create() {
-        var gridData = _WORKSPACE.GRID.getUUIDPath.call(this);
-        this.uuid = new UUID(1, "ns:Grid", gridData);
-        var Grid = _WORKSPACE.GRID.List[this.uuid];
-        if(Grid == undefined) {
+        var Grid = null;
+        this.uuid = _WORKSPACE.GRID.getUUIDPath.call(this, true);
+        if(_WORKSPACE.GRID.List.hasOwnProperty(this.uuid) == false) {
             this.new = true;
             _WORKSPACE.GRID.List[this.uuid] = GridInstance;
         } else {
             this.new = false;
+            Grid = _WORKSPACE.GRID.List[this.uuid];
             return Grid;
         }
     }
@@ -243,17 +313,25 @@ _WORKSPACE.GRID.Element = function(object) {
      * @returns {*}
      */
     this.spotElement = function(element, event) {
-        var actual = _WORKSPACE.GRID.actualCoordinates(event, this.type), found = false, relativeX, relativeY, points = [];
+        var actual = _WORKSPACE.GRID.actualCoordinates(event, this.type), found = false, relativeX, relativeY, points = [], total = 0;
         /** Found the point is within the bounded area */
-        if((actual[0] + event.pageX) > element.el.boundedArea.xC && (actual[1] + event.pageY) > element.el.boundedArea.yC
-        && (actual[0] + event.pageX) < (element.el.boundedArea.xC + element.el.boundedArea.width) && (actual[1] + event.pageY) < (element.el.boundedArea.yC + element.el.boundedArea.height)) {
+        if((actual[0] + event.pageX) >= element.el.boundedArea.xC && (actual[1] + event.pageY) >= element.el.boundedArea.yC
+            && (actual[0] + event.pageX) <= (element.el.boundedArea.xC + element.el.boundedArea.width) && (actual[1] + event.pageY) <= (element.el.boundedArea.yC + element.el.boundedArea.height)) {
             found = true;
         }
         /** Find whether the point touches the element */
         if(found) {
+            // relativeX = actual[0] + event.pageX - element.el.boundedArea.xC, relativeY = actual[1] + event.pageY - element.el.boundedArea.yC;
+            // total = (relativeX + _WORKSPACE.GRID.Size.spread + 1) * (relativeY + _WORKSPACE.GRID.Size.spread + 1);
+            // for(var index = 1, point = _WORKSPACE.GRID.getPoints()(index); index <= total; index++) {
+            //     if(element.el.boundedArea.imagedata.data[(_WORKSPACE.GRID.Size.spread + 1) * point.y + point.x] != 0) {
+            //         return element;
+            //     }
+            // }
+            // return false;
             relativeX = actual[0] + event.pageX - element.el.boundedArea.xC, relativeY = actual[1] + event.pageY - element.el.boundedArea.yC;
             points = _WORKSPACE.GRID.getPoints({
-                pageX: relativeX, 
+                pageX: relativeX,
                 pageY: relativeY
             });
             for(var index in points) {
@@ -267,21 +345,20 @@ _WORKSPACE.GRID.Element = function(object) {
     };
 
     /**
-     * Return the elements if found using coordinates
+     * Return the elements if found using coordinates that checks the Image Data based on a variance value
      * @param event
      */
     this.findElement = function(event) {
-        var Grid = _WORKSPACE.GRID.Locate(event, this.type);
-        var gridUuid = _WORKSPACE.Grid.getUUIDPath.call(this);
+        var gridUuid = this.getUUIDPath(true);
         var Elements = _WORKSPACE.GRID.List[gridUuid].getElements(event); /* Get elements from object of type prefix_UUID: Object */
 
-        var context = _DRAWING.UI[this.type].rowSet[0].dom.getContext("2d");
+        var context = _WORKSPACE.GRID.getContext(this.type);
         var found = _WORKSPACE.GRID.FindInCanvas(event, context), current = null, foundElements = new Object();
         if(found && Elements.contains == true) {
-            for(var element in Elements) {
-                current = this.spotElement(Elements[element], event);
+            for(var element in Elements.elements) {
+                current = this.spotElement(Elements.elements[element], event);
                 if(current !== false) {
-                    foundElements[Elements[element].uuid] = current;
+                    foundElements[Elements.elements[element].uuid] = current;
                 }
             }
             return foundElements;
@@ -300,14 +377,14 @@ _WORKSPACE.GRID.Element = function(object) {
      * Adds an element to grid elements
      * @param element
      */
-    this.addElement = function(element) {
+    this.addElement = function(Element) {
         if(this.ELEMENTS.contains == false) {
             this.ELEMENTS.contains = true;
         }
-        if(this.ELEMENTS.elements.hasOwnProperty(element.uuid) == undefined) {
-            this.ELEMENTS.elements[element.uuid] = {};
+        if(this.ELEMENTS.elements.hasOwnProperty(Element.uuid) == undefined) {
+            this.ELEMENTS.elements[Element.uuid] = {};
         }
-        this.ELEMENTS.elements[element.uuid] = element;
+        this.ELEMENTS.elements[Element.uuid] = Element;
     };
 
     /**
@@ -315,11 +392,24 @@ _WORKSPACE.GRID.Element = function(object) {
      * @param element
      * @returns {_WORKSPACE.GRID.Element}
      */
-    this.removeElement = function(element) {
-        var uuid = element.uuid;
+    this.removeElement = function(Element) {
+        var uuid = Element.uuid;
         delete this.ELEMENTS.elements[uuid];
         return this;
     };
+
+    /**
+     * Removes the entire history of the element from the Canvas
+     * @param element
+     * @returns {_WORKSPACE.GRID.Element}
+     */
+    // this.purgeElement = function(element) {
+    //     var uuid = element.uuid;
+    //     delete this.ELEMENTS.elements[uuid];
+    //     delete _WORKSPACE.ELEMENTS.List[uuid];
+    //     delete _WORKSPACE.ELEMENT_REPOSITORY.ELEMENTS.elements[ruuid]; // remove from repository and history
+    //     return this;
+    // };
 
     /**
      * Get the elements ordered by weight
@@ -328,6 +418,8 @@ _WORKSPACE.GRID.Element = function(object) {
     this.getElementsByTop = function(event) {
 
     };
+
+    this.getUUIDPath = _WORKSPACE.GRID.getUUIDPath;
 
     this.ELEMENTS = {contains: false, elements: {}};
 
@@ -342,14 +434,15 @@ _WORKSPACE.ELEMENTS.Element = function(object) {
     this.el = object;
 
     function create() {
-        var date = new Date();
-        this.uuid = new UUID(1, "ns:Element", this.el.name + "_" + date.getTime());
-        var Element = _WORKSPACE.ELEMENTS.List[this.uuid];
-        if(Element == undefined) {
+        var date = new Date(), Element = null, Grid = _WORKSPACE.GRID.Locate({pageX: this.el.start[0], pageY: this.el.start[1]}, this.el.storageType);
+        this.uuid = (new UUID(1, "ns:Element", this.el.name + "_" + date.getTime())).toString("std");
+        Grid.addElement(this);
+        if(_WORKSPACE.ELEMENTS.List.hasOwnProperty(this.uuid) == false) {
             this.new = true;
             _WORKSPACE.ELEMENTS.List[this.uuid] = this;
         } else {
             this.new = false;
+            Element = _WORKSPACE.ELEMENTS.List[this.uuid];
             return Element;
         }
     }
@@ -371,10 +464,10 @@ _WORKSPACE.ELEMENTS.Element = function(object) {
      * Get the grid for the element
      */
     this.getGrid = function() {
-         var point = this.el.point;
-         var eventObject = {pageX: point[0], pageY: point[1]};
-         var Grid = _WORKSPACE.GRID.Locate(eventObject, this.el.storageType);
-         return Grid;
+        var point = this.el.point;
+        var eventObject = {pageX: point[0], pageY: point[1]};
+        var Grid = _WORKSPACE.GRID.Locate(eventObject, this.el.storageType);
+        return Grid;
     };
 
     this.incrementVersion = function() {
@@ -394,14 +487,14 @@ _WORKSPACE.ELEMENTS.Element = function(object) {
      * Gets the Bounded Area from the UUID
      */
     this.getBoundedAreaGrid = function() {
-        var BAruuid = new UUID(1, "ns:RepositoryElement", this.el.name + "_" + this.uuid);
+        var BAruuid = (new UUID(1, "ns:RepositoryElement", this.el.name + "_" + this.uuid)).toString("std");
         return _WORKSPACE.ELEMENT_REPOSITORY.BOUNDED_AREA.elements[BAruuid];
     };
 
     this.setUuid = function() {
         var date = new Date();
         this.previousUuid = this.uuid;
-        this.uuid = new UUID(this.version, "ns:Element", this.el.name + "_" + date.getTime());
+        this.uuid = (new UUID(this.version, "ns:Element", this.el.name + "_" + date.getTime())).toString("std");
     };
 
     this.setruuid = function(ruuid) {
@@ -414,14 +507,14 @@ _WORKSPACE.BOUNDEDAREA.Element = function(object) {
     this.ba = object;
 
     function create() {
-        var baData = this.ba.context.e.uuid;
-        this.uuid = new UUID(1, "ns:BoundedArea", baData);
-        var BoundedArea = _WORKSPACE.BOUNDEDAREA.List[this.uuid];
-        if(BoundedArea == false) {
+        var baData = this.ba.context.e.uuid, BoundedArea = null;
+        this.uuid = (new UUID(1, "ns:BoundedArea", baData)).toString("std");
+        if(_WORKSPACE.BOUNDEDAREA.List.hasOwnProperty(this.uuid) == false) {
             this.new = true;
             _WORKSPACE.BOUNDEDAREA.List[this.uuid] = this;
         } else {
             this.new = false;
+            BoundedArea = _WORKSPACE.BOUNDEDAREA.List[this.uuid]
             return BoundedArea;
         }
     }
@@ -461,24 +554,24 @@ _WORKSPACE.ELEMENT_REPOSITORY.Singleton = function() {
         var Element = null, ruuid = null;
         if(lifecycle_stage == LIFECYCLE_CREATE) {
             Element = new _WORKSPACE.ELEMENTS.Element(el);
-            ruuid = new UUID(1, "ns:RepositoryElement", el.name + "_" + Element.uuid);
+            ruuid = (new UUID(1, "ns:RepositoryElement", el.name + "_" + Element.uuid)).toString("std");
         } else if(lifecycle_stage == LIFECYCLE_CLONE && replaceEl != undefined) {
-            var previousRuuid = new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid);
+            var previousRuuid = (new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid)).toString("std");
             Element = jQuery.extend(true, el.e);
             Element.incrementVersion();
             Element.setUuid();
             Element.setruuid(previousRuuid);
             Element.el = replaceEl;
-            ruuid = new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid);
+            ruuid = (new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid)).toString("std");
         } else if(lifecycle_stage == ELEMENT_CREATE && uuid != undefined) {
             Element = _WORKSPACE.ELEMENTS.List[uuid];
             Element.el = el;
-            ruuid = new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid);
+            ruuid = (new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid)).toString("std");
         } else if(lifecycle_stage == ELEMENT_EDIT) {
             Element = _WORKSPACE.ELEMENTS.List[uuid];
             Element.el = el;
             Element.incrementVersion();
-            ruuid = new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid);
+            ruuid = (new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid)).toString("std");
         }
         Element.ruuid = ruuid;
         if(this.ELEMENTS.contains == false) {
@@ -490,20 +583,20 @@ _WORKSPACE.ELEMENT_REPOSITORY.Singleton = function() {
     this.addBoundedAreaToRepository = function(ba, lifecycle_stage, uuid, replaceBa) {
         var BoundedArea = null, ruuid = null;
         if(lifecycle_stage == LIFECYCLE_CREATE) {
-            BoundedArea = new _WORKSPACE.BOUNDED_AREA.Element(ba);
-            ruuid = new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid);
+            BoundedArea = new _WORKSPACE.BOUNDEDAREA.Element(ba);
+            ruuid = (new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid)).toString("std");
         } else if(lifecycle_stage == LIFECYCLE_CLONE && replaceBa != undefined) {
             BoundedArea = jQuery.extend(true, ba.b);
             BoundedArea.ba = replaceBa;
-            ruuid = new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid);
+            ruuid = (new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid)).toString("std");
         } else if(lifecycle_stage == BOUNDED_AREA_CREATE && uuid != undefined) {
-            BoundedArea = _WORKSPACE.BOUNDED_AREA.List[uuid];
+            BoundedArea = _WORKSPACE.BOUNDEDAREA.List[uuid];
             BoundedArea.ba = ba;
-            ruuid = new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid);
+            ruuid = (new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid)).toString("std");
         } else if(lifecycle_stage == BOUNDED_AREA_EDIT) {
-            BoundedArea = _WORKSPACE.BOUNDED_AREA.List[uuid];
+            BoundedArea = _WORKSPACE.BOUNDEDAREA.List[uuid];
             BoundedArea.ba = ba;
-            ruuid = new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid);
+            ruuid = (new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid)).toString("std");
         }
         if(this.BOUNDED_AREA.contains == false) {
             this.BOUNDED_AREA.contains = true;
@@ -548,12 +641,12 @@ _WORKSPACE.ELEMENT_REPOSITORY.Factory.create = function() {
         totalWidth: _WORKSPACE.PRELAYOUT.totalWidth,
         totalHeight: _WORKSPACE.PRELAYOUT.totalHeight,
         multiplier: 7,
-        spread: 4,
+        spread: 3,
         gridColumn: Math.ceil(_WORKSPACE.PRELAYOUT.totalWidth / _WORKSPACE.PRELAYOUT.canvasWidth),
         gridRow: Math.ceil(_WORKSPACE.PRELAYOUT.totalHeight / _WORKSPACE.PRELAYOUT.canvasHeight),
-        coordinates: function(gridColumn, gridRow) { /* return Array */
+        coordinates: function (gridColumn, gridRow) { /* return Array */
 
         }
     };
 
-})();    
+})();

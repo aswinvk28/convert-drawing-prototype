@@ -64,14 +64,14 @@ var _DOCUMENT = _DOCUMENT || {};
         },
         setQuadrant: function() {
             this.quadrant = "";
-            if(this.option.indexOf("Out") !== -1 && this.option.indexOf("Left") !== -1) {
-                this.quadrant = "A";
-            } else if(this.option.indexOf("Out") !== -1 && this.option.indexOf("Right") !== -1) {
-                this.quadrant = "S";
-            } else if(this.option.indexOf("In") !== -1 && this.option.indexOf("Left") !== -1) {
-                this.quadrant = "T";
-            } else if(this.option.indexOf("In") !== -1 && this.option.indexOf("Right") !== -1) {
+            if(this.option.indexOf("Negative Retention") !== -1 && this.option.indexOf("Left") !== -1) {
                 this.quadrant = "C";
+            } else if(this.option.indexOf("Negative Retention") !== -1 && this.option.indexOf("Right") !== -1) {
+                this.quadrant = "T";
+            } else if(this.option.indexOf("Positive Retention") !== -1 && this.option.indexOf("Left") !== -1) {
+                this.quadrant = "S";
+            } else if(this.option.indexOf("Positive Retention") !== -1 && this.option.indexOf("Right") !== -1) {
+                this.quadrant = "A";
             }
             return this.quadrant;
         },

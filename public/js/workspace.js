@@ -54,6 +54,9 @@ CONVERTDRAWING.base = {
     viewContext: function() {
         return _DRAWING.UI.canvasObject.dom.getContext("2d");
     },
+    uiContext: function() {
+        return _DRAWING.UI.canvasObject.dom.getContext("2d");
+    },
     documentContext: function() {
         return _DRAWING.UI.document.rowSet[0].dom.getContext("2d");
     },

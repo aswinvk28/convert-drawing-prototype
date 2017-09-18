@@ -106,7 +106,7 @@ CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype
             this.boundedArea = (new _WORKSPACE.boundedArea(this));
             this.boundedArea.pivot = this.start;
         }
-        this.boundedArea.setArea(position[0] + this.point[0], position[1] + this.point[1], this.size[0], this.size[1]);
+        this.boundedArea.setArea(position[0] + this.start[0], position[1] + this.start[1], this.size[0], this.size[1]);
         // this.boundedArea.grid = _WORKSPACE.GRID.Locate({pageX: this.boundedArea.pivot[0], pageY: this.boundedArea.pivot[1]}, this.storageType); /* grid object */
     },
     bindEvents: function() {

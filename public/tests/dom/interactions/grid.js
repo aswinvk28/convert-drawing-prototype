@@ -5,121 +5,130 @@
 describe("The grid must be identifiable", function() {
 
     beforeAll(function() {
-        var parameters = {start: [300, 200], end: [600, 400], type: "ui", dimensions: [1, 1]};
-        this.Grid = new _WORKSPACE.GRID.Element(parameters);
+        this.parameters = {start: [300, 200], end: [600, 400], type: "ui", dimensions: [1, 1]};
+        this.Grid = new _WORKSPACE.GRID.Element(this.parameters);
 
         this.event = $.Event("click", {pageX: 650, pageY: 450});
-        this.LocatedGrid = _WORKSPACE.GRID.Locate(event, "ui");
+        this.LocatedGrid = _WORKSPACE.GRID.Locate(this.event, "ui");
     });
 
-    it("The grid should have the correct UUID Path", function() {
+    it("and should have the correct UUID Path", function() {
         var gridUuid = this.Grid.getUUIDPath();
-
         expect(gridUuid).toEqual("1_1");
+
+        expect(this.Grid.dimensions).toEqual(this.parameters.dimensions);
+        expect(this.Grid.start).toEqual(this.parameters.start);
+        expect(this.Grid.end).toEqual(this.parameters.end);
+
+        var actualCoordinates = _WORKSPACE.GRID.actualCoordinates(this.event, "ui");
+        expect(actualCoordinates).toEqual([_DRAWING.UI.canvasObject.boundedArea.xC, _DRAWING.UI.canvasObject.boundedArea.yC]);
     });
 
-    it("The grid should be created from the provided point", function() {
+    it("and should be created from the provided point", function() {
         var width = _WORKSPACE.GRID.Size.width, height = _WORKSPACE.GRID.Size.height;
 
-        var dimensions = [this.event.pageX / width, this.event.pageY / height];
+        var gridUuid = this.LocatedGrid.getUUIDPath();
 
-        var gridUuid = this.LocateGrid.getUUIDPath();
-
-        expect(dimensions[0] + "_" + dimensions[1]).toEqual(gridUuid);
+        expect(this.LocatedGrid.dimensions[0] + "_" + this.LocatedGrid.dimensions[1]).toEqual(gridUuid);
     });
 
 });
 
-describe("The grid must contains its elements", function() {
+describe("The grid must contain its elements", function() {
 
     beforeAll(function() {
-        this.event = $.Event("click", {pageX: 650, pageY: 450});
-        this.LocatedGrid = _WORKSPACE.GRID.Locate(event, "ui");
+        this.event = $.Event("click", {pageX: 600, pageY: 400});
+        this.LocatedGrid = _WORKSPACE.GRID.Locate(this.event, "ui");
 
         var levent = $.Event("click.Line", {pageX: 600, pageY: 400});
 
         this.el = ConvertDrawing(new CONVERTDRAWING.Line([levent.pageX, levent.pageY]), [null, CONVERTDRAWING.Line.prototype.storageType, levent]);
+        this.el.storageType = "ui";
         this.el.setMidPoint([800,800]);
 
         this.el.processType = "temp";
-        this.el.draw.call(this.el, {pageX: 600, pageY: 400});
+        this.el.refContext = _DRAWING.UI.canvasObject.dom.getContext("2d");
+        this.el.currentProcessType = "ui";
+        this.el.draw.call(this.el, {pageX: 800, pageY: 800});
         this.el.boundedArea.setData();
+
+        this.el.refContext = _DRAWING.UI.temp.rowSet[0].dom.getContext("2d");
+        this.el.currentProcessType = "temp";
+        this.el.draw.call(this.el, {pageX: 800, pageY: 800});
 
         this.Element = new _WORKSPACE.ELEMENTS.Element(this.el);
 
-        this.LocateGrid.addElement(this.Element);
+        this.LocatedGrid.addElement(this.Element);
     });
 
-    it("should contain the added element", function() {
-        expect(this.Element).toEqual(this.LocateGrid.ELEMENTS.elements[this.Element.uuid]);
+    it("and should contain the added element", function() {
+        expect(this.Element).toEqual(this.LocatedGrid.ELEMENTS.elements[this.Element.uuid]);
     });
 
-    it("should not locate the provided element", function() {
-        var event = $.Event("click", {pageX: 620, pageY: 470})
-        var Element = this.LocateGrid.spotElement(this.Element, event);
+    it("and should not locate the provided element", function() {
+        var event = $.Event("click", {pageX: 620, pageY: 440});
+        var Element = this.LocatedGrid.spotElement(this.Element, event);
 
         expect(Element).toBeFalsy();
     });
 
-    it("should locate the provided element from its set", function() {
-        var event = $.Event("click", {pageX: 600, pageY: 400})
-        var Element = this.LocateGrid.spotElement(this.Element, event);
-
-        expect(Element).toNotBe(false);
+    it("and should locate the provided element from its set", function() {
+        var event = $.Event("click", {pageX: 600, pageY: 400});
+        var Element = this.LocatedGrid.spotElement(this.Element, event);
+        expect(!Element).toBeFalsy();
+        expect(Element).toEqual(this.Element);
     });
 
-    it("should detect whether the point is in the canvas", function() {
+    it("and should detect whether the point is in the canvas", function() {
         var event = $.Event("click", {pageX: 600, pageY: 400});
         var context = _DRAWING.UI.canvasObject.dom.getContext("2d");
         var found = _WORKSPACE.GRID.FindInCanvas(event, context);
         expect(found).toBeTruthy();
     });
 
-    it("should detect whether the point is in the path", function() {
-        var event = $.Event("click", {pageX: 600, pageY: 400});
-        var context = _DRAWING.UI.temp.rowSet[0].dom.getContext("2d");
+    it("and should detect whether the point is in the path", function() {
+        var levent = $.Event("click", {pageX: 600, pageY: 400});
+        var context = _DRAWING.UI.canvasObject.dom.getContext("2d");
         var element = ConvertDrawing(new CONVERTDRAWING.Line([levent.pageX, levent.pageY]), [null, CONVERTDRAWING.Line.prototype.storageType, levent]);
-        var found = _WORKSPACE.GRID.FindInCurrent(event, context);
+        var found = _WORKSPACE.GRID.FindInCurrent(levent, context);
         expect(found).toBeTruthy();
     });
 
-    it("should check whether the given point is not on the grid elements' context", function() {
-        var event = $.Event("click", {pageX: 620, pageY: 410});
+    it("and should check whether the given point is not on the grid elements' context", function() {
+        var event = $.Event("click", {pageX: 620, pageY: 410, target: this.el});
         var found_ui = _WORKSPACE.GRID.isPointInGrid(event, "ui");
         var found_temp = _WORKSPACE.GRID.isPointInGrid(event, "temp");
         expect(found_ui).toBeFalsy();
         expect(found_temp).toBeFalsy();
     });
 
-    it("should check whether the given point is in the grid elements' context", function() {
-        var event = $.Event("click", {pageX: 600, pageY: 400});
+    it("and should check whether the given point is in the grid elements' context", function() {
+        var event = $.Event("click", {pageX: 600, pageY: 400, target: this.el});
         var found_ui = _WORKSPACE.GRID.isPointInGrid(event, "ui");
         var found_temp = _WORKSPACE.GRID.isPointInGrid(event, "temp");
         expect(found_ui).toBeTruthy();
         expect(found_temp).toBeTruthy();
     });
 
-    it("should be able to search by provided element", function() {
+    it("and should be able to search by provided element", function() {
         var event = $.Event("click", {pageX: 600, pageY: 400});
         var found = _WORKSPACE.GRID.SearchByElement(event, this.el);
+        expect(found).toEqual(this.el.e);
     });
 
-    it("should be able to search the elements by Point", function() {
+    it("and should be able to search the elements by Point", function() {
         var event = $.Event("click", {pageX: 600, pageY: 400});
-        var found_doc = _WORKSPACE.GRID.SearchElementsByPoint(event, "document");
-        var found_meta = _WORKSPACE.GRID.SearchElementsByPoint(event, "metadata");
         var found_ui = _WORKSPACE.GRID.SearchElementsByPoint(event, "ui");
         var found_temp = _WORKSPACE.GRID.SearchElementsByPoint(event, "temp");
 
-        expect(found_doc).toBeTruthy();
-        expect(found_meta).toBeDefined();
         expect(found_ui).toBeDefined();
         expect(found_temp).toBeDefined();
     });
 
-    it("should remove the element from its set", function() {
+    it("and should remove the element from its set", function() {
         var Element = this.Element;
-        this.LocateGrid.removeElement(Element);
+        this.LocatedGrid.removeElement(Element);
+        expect(this.LocatedGrid.ELEMENTS.elements.hasOwnProperty(Element.uuid)).toBeFalsy();
     });
 
 });
@@ -139,10 +148,10 @@ describe("The grid should be able to retain the elements in its repository", fun
         this.el.draw.call(this.el, {pageX: 600, pageY: 400});
         this.el.boundedArea.setData();
 
-        this.ElementRepository = _WORKSPACE.ELEMENT_REPOSITORY.Factory.create();
+        this.ElementRepository = GLOBALS.getElementRepository();
     });
 
-    it("should add the element to the repository", function() {
+    it("and should add the element to the repository", function() {
         this.ElementRepository.addElementToRepository(this.el, LIFECYCLE_CREATE, null, null);
 
         expect(this.ElementRepository.ELEMENTS.contains).toBeTruthy();
@@ -154,7 +163,7 @@ describe("The grid should be able to retain the elements in its repository", fun
         expect(this.ElementRepository.ELEMENTS.elements[ruuid]).toEqual(this.el.e);
     });
 
-    it("should add the bounded area to the repository", function() {
+    it("and should add the bounded area to the repository", function() {
         this.ElementRepository.addBoundedAreaToRepository(this.el.boundedArea, LIFECYCLE_CREATE, null, null);
 
         expect(this.ElementRepository.BOUNDED_AREA.contains).toBeTruthy();

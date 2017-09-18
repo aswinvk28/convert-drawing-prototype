@@ -91,7 +91,12 @@ _WORKSPACE.boundedArea = function(context) {
     this.setData = function(create, data) {
         if(!create && !data) {
             this.imagedata = this.context[this.context.storageType + "Context"]()
-                .getImageData(this.xC - 4, this.yC - 4, this.width + 8, this.height + 8);
+                .getImageData(
+                    this.xC - (_WORKSPACE.GRID.Size.spread + 1),
+                    this.yC - (_WORKSPACE.GRID.Size.spread + 1),
+                    this.width + 2 * (_WORKSPACE.GRID.Size.spread + 1),
+                    this.height + 2 * (_WORKSPACE.GRID.Size.spread + 1)
+                );
         } else {
             this.imagedata = data;
         }

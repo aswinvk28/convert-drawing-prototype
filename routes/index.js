@@ -21,6 +21,14 @@ router.get('/test/dom/spec-runner', function(req, res, next) {
     res.render('dom/specRunner');
 });
 
+router.get('/test/data-elements/spec-runner', function(req, res, next) {
+    res.render('data-elements/specRunner');
+});
+
+router.get('/test/data-components/spec-runner', function(req, res, next) {
+    res.render('data-components/specRunner');
+});
+
 router.get('/elements', function(req, res, next) {
     res.render('elements');
 })
