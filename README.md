@@ -16,7 +16,7 @@ Here's a video of the prototype created for Convert Drawing:
 
 ## Doors
 
-[](./video/door.png)
+![](./video/door.png)
 
 ## Walls
 
