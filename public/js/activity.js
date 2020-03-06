@@ -149,7 +149,7 @@ _WORKSPACE.activity = function(name, type, method, operation) {
         if(!event.helper) {
             var context = instance.context[instance.context.length - 1], data = {};
             while(context != undefined) {
-                data = jQuery.extend(true, data, context[instance.operation].call(context, instance, context.boundedArea));
+                data = _.extend(true, data, context[instance.operation].call(context, instance, context.boundedArea));
                 context = context.next;
             }
             if(typeof data == "array") {

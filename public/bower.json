@@ -5,6 +5,14 @@
   "authors": [
     "Aswin <aswinvk28@gmail.com>"
   ],
+  "dependencies": {
+    "raphael": "^2.2.0",
+    "node-uuid": "^1.4.7",
+    "pubsub.js": "^0.1.0",
+    "jasmine-core": "^2.4.1",
+    "underscore": "1.8.3",
+    "pure-uuid": "^1.4.4"
+  },
   "license": "MIT",
   "homepage": "",
   "private": true,

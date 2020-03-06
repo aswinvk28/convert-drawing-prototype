@@ -20,7 +20,7 @@ var _DOCUMENT = _DOCUMENT || {};
         
     };
     
-    CONVERTDRAWING.GroupHelper.prototype = jQuery.extend(CONVERTDRAWING.Helper, {
+    CONVERTDRAWING.GroupHelper.prototype = _.extend(CONVERTDRAWING.Helper, {
         groupElement: function() {
             
         },
@@ -35,7 +35,7 @@ var _DOCUMENT = _DOCUMENT || {};
         
     };
     
-    CONVERTDRAWING.SplitHelper.prototype = jQuery.extend(CONVERTDRAWING.Helper, {
+    CONVERTDRAWING.SplitHelper.prototype = _.extend(CONVERTDRAWING.Helper, {
         splitElement: function() {
             
         },
@@ -50,7 +50,7 @@ var _DOCUMENT = _DOCUMENT || {};
         
     };
     
-    CONVERTDRAWING.MergeHelper.prototype = jQuery.extend(CONVERTDRAWING.Helper, {
+    CONVERTDRAWING.MergeHelper.prototype = _.extend(CONVERTDRAWING.Helper, {
         mergeElement: function() {
             
         },

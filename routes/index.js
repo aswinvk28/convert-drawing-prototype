@@ -22,11 +22,11 @@ router.get('/test/dom/spec-runner', function(req, res, next) {
 });
 
 router.get('/test/data-elements/spec-runner', function(req, res, next) {
-    res.render('data-elements/specRunner');
+    res.render('data-elements/specRunner.html');
 });
 
 router.get('/test/data-components/spec-runner', function(req, res, next) {
-    res.render('data-components/specRunner');
+    res.render('data-components/specRunner.html');
 });
 
 router.get('/elements', function(req, res, next) {

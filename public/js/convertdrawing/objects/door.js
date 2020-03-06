@@ -80,7 +80,7 @@ var _DOCUMENT = _DOCUMENT || {};
             var thickness = settings(proto.definition).getThickness(), properties = {};
             $(_DRAWING.UI.canvasObject.dom).on(proto.triggerMethod + "." + proto.name, function(event) {
                 proto.setCanvasesToPosition();
-                instance = new proto.definition(startPoint, jQuery.extend({
+                instance = new proto.definition(startPoint, _.extend({
                     option: settings(proto.definition).getOption()
                 }, properties)); // activity creation and drawing initiation
                 var proto_uuid = proto.name + "_" + uuid.v1();

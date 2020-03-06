@@ -16,7 +16,7 @@ var _DOCUMENT = _DOCUMENT || {};
         return "helper";
     };
 
-    CONVERTDRAWING.Helper.prototype = jQuery.extend({
+    CONVERTDRAWING.Helper.prototype = _.extend({
         isStorage: true,
         isProcess: true,
         ACTIVITY_NAME: '',

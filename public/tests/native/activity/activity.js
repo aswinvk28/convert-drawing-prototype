@@ -52,7 +52,7 @@ describe("The spec defines that a GENERIC activity type should be associated wit
         };
 
         // configuration
-        CONVERTDRAWING.Point.prototype = jQuery.extend(CONVERTDRAWING.Point.prototype, {
+        CONVERTDRAWING.Point.prototype = _.extend(CONVERTDRAWING.Point.prototype, {
             ACTIVITY_TYPE: "generic",
             ACTIVITY_NAME: 'customFunction',
             ACTIVITY_METHOD: 'draw',

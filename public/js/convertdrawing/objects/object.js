@@ -21,4 +21,4 @@ CONVERTDRAWING.Object.prototype = {
 CONVERTDRAWING.Object.prototype._setMidPoint = CONVERTDRAWING.Element.prototype.setMidPoint;
 CONVERTDRAWING.Object.prototype._setSlope = CONVERTDRAWING.Element.prototype.setSlope;
 
-CONVERTDRAWING.Object.prototype = jQuery.extend(CONVERTDRAWING.Element.prototype, CONVERTDRAWING.Object.prototype);
+CONVERTDRAWING.Object.prototype = _.extend(CONVERTDRAWING.Element.prototype, CONVERTDRAWING.Object.prototype);

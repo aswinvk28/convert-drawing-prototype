@@ -25,6 +25,5 @@
   },
   "_source": "https://github.com/federico-lox/pubsub.js.git",
   "_target": "^0.1.0",
-  "_originalSource": "pubsub.js",
-  "_direct": true
+  "_originalSource": "pubsub.js"
 }

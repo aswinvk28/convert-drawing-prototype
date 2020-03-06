@@ -14,7 +14,7 @@ CONVERTDRAWING.Element = function() { // content
     return "element";
 };
 
-CONVERTDRAWING.Element.prototype = jQuery.extend(CONVERTDRAWING.Helper.prototype, {
+CONVERTDRAWING.Element.prototype = _.extend(CONVERTDRAWING.Helper.prototype, {
     bindPostEvents: function(preCallback, processType, prevEvent, postCallback) {
         var proto = this;
         // move to top

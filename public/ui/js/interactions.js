@@ -285,7 +285,7 @@ _WORKSPACE.INTERACTIONS.Pan = function(event) {
 
 _WORKSPACE.GRID.Element = function(object) {
     var GridInstance = this;
-    GridInstance = jQuery.extend(GridInstance, object);
+    GridInstance = _.extend(GridInstance, object);
 
     function create() {
         var Grid = null;
@@ -557,7 +557,7 @@ _WORKSPACE.ELEMENT_REPOSITORY.Singleton = function() {
             ruuid = (new UUID(1, "ns:RepositoryElement", el.name + "_" + Element.uuid)).toString("std");
         } else if(lifecycle_stage == LIFECYCLE_CLONE && replaceEl != undefined) {
             var previousRuuid = (new UUID(Element.version, "ns:RepositoryElement", el.name + "_" + Element.uuid)).toString("std");
-            Element = jQuery.extend(true, el.e);
+            Element = _.extend(true, el.e);
             Element.incrementVersion();
             Element.setUuid();
             Element.setruuid(previousRuuid);
@@ -586,7 +586,7 @@ _WORKSPACE.ELEMENT_REPOSITORY.Singleton = function() {
             BoundedArea = new _WORKSPACE.BOUNDEDAREA.Element(ba);
             ruuid = (new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid)).toString("std");
         } else if(lifecycle_stage == LIFECYCLE_CLONE && replaceBa != undefined) {
-            BoundedArea = jQuery.extend(true, ba.b);
+            BoundedArea = _.extend(true, ba.b);
             BoundedArea.ba = replaceBa;
             ruuid = (new UUID(1, "ns:RepositoryElement", BoundedArea.getElement().el.name + "_" + BoundedArea.uuid)).toString("std");
         } else if(lifecycle_stage == BOUNDED_AREA_CREATE && uuid != undefined) {

@@ -22,7 +22,7 @@ _WORKSPACE.metadata = function(object, context) {
         this.activity = activity;
         return this;
     };
-    jQuery.extend(this, object);
+    _.extend(this, object);
 };
 
 _WORKSPACE.data = function(metadata) {

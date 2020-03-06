@@ -11,14 +11,14 @@ var _DRAWING = _DRAWING || {};
 var _DOCUMENT = _DOCUMENT || {};
 
 _DOCUMENT.extend = function(child, parent) {
-    child.prototype = jQuery.extend(parent.prototype, child.prototype)
+    child.prototype = _.extend(parent.prototype, child.prototype)
     function descendant() {
         this.parent = parent;
         child.apply(this, arguments);
         return this;
     }
     descendant.prototype = {};
-    descendant.prototype = jQuery.extend(descendant.prototype, child.prototype);
+    descendant.prototype = _.extend(descendant.prototype, child.prototype);
     descendant.prototype["definition"] = descendant;
     return descendant;
 };

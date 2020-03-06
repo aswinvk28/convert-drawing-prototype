@@ -1,0 +1,73 @@
+﻿<html>
+<head>
+    <title>Behavioural tests (Data, Spec Runner)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css" />
+    <script type="text/javascript" src="/bower_components/underscore/underscore.js"></script>
+    <script type="text/javascript" src="/lib/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/bower_components/jasmine-core/lib/jasmine-core/jasmine.css">
+
+    <script type="text/javascript" src="/bower_components/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+    <script type="text/javascript" src="/bower_components/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+    <script type="text/javascript" src="/bower_components/jasmine-core/lib/jasmine-core/boot.js"></script>
+</head>
+    <body>
+        <div id="page_body" class="col-lg-12">
+            <canvas id="document_decider" style="background-color:transparent;display:none"></canvas>
+        </div>
+        <div id="domsupport">
+            <a class="tracking absolute" id="marker" onclick="triggerCoordinatedCanvas(event);" style="display:none"><img src="/images/location-marker-32x32.png" id="marker_image" /></a>
+        </div>
+
+        <!-- All namespacing -->
+        <script type="text/javascript" src="/bower_components/pubsub.js/src/pubsub.js"></script>
+        <script type="text/javascript" src="/bower_components/pure-uuid/uuid.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing.js"></script>
+        <script type="text/javascript" src="/js/workspace.js"></script>
+
+        <!-- All wrappers -->
+        <script type="text/javascript" src="/js/metadata.js"></script>
+        <script type="text/javascript" src="/js/document.js"></script>
+        <script type="text/javascript" src="/js/dom.js"></script>
+
+        <!-- All initialising -->
+        <script type="text/javascript" src="/js/viewport.js"></script>
+        <script type="text/javascript" src="/js/layout.js"></script>
+        <script type="text/javascript" src="/js/drawing.js"></script>
+        <script type="text/javascript" src="/js/activity.js"></script>
+        <script type="text/javascript" src="/js/paper.js"></script>
+        <script type="text/javascript" src="/ui/js/interactions.js"></script>
+        <script type="text/javascript" src="/ui/js/features.js"></script>
+
+        <!-- All elements -->
+        <script type="text/javascript" src="/js/convertdrawing/helpers/helper.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/marker.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/point.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/emulator.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/intersection.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/binding.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/element.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/line.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/circle.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/rectangle.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/filledrectangle.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/text.js"></script>
+
+        <script type="text/javascript" src="/js/convertdrawing/objects/object.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/block/block.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/objects/wall.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/objects/door.js"></script>
+
+        <script type="text/javascript" src="/ui/js/ui.js"></script>
+
+        <!-- Testing code -->
+        
+        <script type="text/javascript" src="/tests/dom/interactions/grid.js"></script>
+        <style>
+            canvas.grid-canvas {
+                display: none;
+            }
+        </style>
+    </body>
+</html>

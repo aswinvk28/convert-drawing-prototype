@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>canvas prototype</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/style.css" />
+        <script type="text/javascript" src="js/lib/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="menubar" class="absolute" style="top:15px;left:20px">
+            <ul class="unstyled">
+                <li role="presentation"><a id="point" title="Point" class="btn btn-default ui-element" href="javascript:void(0)" name="point"><img src="images/letter-x-24x24.png" /></a></li>
+                <li role="presentation"><a id="line" title="Line" class="btn btn-default ui-element" href="javascript:void(0)" name="line"><img src="images/square-24x24.png" /></a></li>
+                <li role="presentation"><a id="arc" title="Arc" class="btn btn-default ui-element" href="javascript:void(0)" name="arc"><img src="images/letter-x-24x24.png" /></a></li>
+                <li role="presentation"><a id="rect" title="Rectangle" class="btn btn-default ui-element" href="javascript:void(0)" name="rect"><img src="images/letter-x-24x24.png" /></a></li>
+                <li role="presentation"><a id="square" title="Square" class="btn btn-default ui-element" href="javascript:void(0)" name="square"><img src="images/square-24x24.png" /></a></li>
+            </ul>
+        </div>
+        <canvas id="document_decider" style="background-color:transparent;display:none"></canvas>
+        <div id="page_body" class="col-lg-12">
+            
+        </div>
+        <div id="domsupport">
+            <a class="tracking absolute" id="marker" onclick="triggerCoordinatedCanvas(event);" style="display:none"><img src="images/location-marker-32x32.png" id="marker_image" /></a>
+        </div>
+
+        <!-- All namespacing -->
+        <script type="text/javascript" src="/bower_components/pubsub.js/src/pubsub.js"></script>
+        <script type="text/javascript" src="/bower_components/node-uuid/uuid.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing.js"></script>
+        <script type="text/javascript" src="/js/workspace.js"></script>
+        
+        <!-- All wrappers -->
+        <script type="text/javascript" src="/js/metadata.js"></script>
+        <script type="text/javascript" src="/js/document.js"></script>
+        <script type="text/javascript" src="/js/dom.js"></script>
+        
+        <!-- All initialising -->
+        <script type="text/javascript" src="/js/viewport.js"></script>
+        <script type="text/javascript" src="/js/layout.js"></script>
+        <script type="text/javascript" src="/js/drawing.js"></script>
+        <script type="text/javascript" src="/js/activity.js"></script>
+        <script type="text/javascript" src="/js/paper.js"></script>
+        <script type="text/javascript" src="/ui/js/interactions.js"></script>
+        
+        <!-- All elements -->
+        <script type="text/javascript" src="/js/convertdrawing/helpers/helper.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/marker.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/point.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/helpers/emulator.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/element.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/line.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/circle.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/rectangle.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/filledrectangle.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/element/text.js"></script>
+        
+        <script type="text/javascript" src="/js/convertdrawing/objects/object.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/block/block.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/objects/wall.js"></script>
+        <script type="text/javascript" src="/js/convertdrawing/objects/door.js"></script>
+        
+        <script type="text/javascript" src="/ui/js/ui.js"></script>
+    </body>
+</html>

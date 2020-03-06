@@ -12,8 +12,8 @@ var _DOCUMENT = _DOCUMENT || {};
 
 CONVERTDRAWING.Emulator = function(refContext, instance) {
     var setInstance = function(instance) {
-        this.instance = jQuery.extend(this.instance, instance);
-        this.instance.prototype = jQuery.extend(this.instance.prototype, instance.prototype);
+        this.instance = _.extend(this.instance, instance);
+        this.instance.prototype = _.extend(this.instance.prototype, instance.prototype);
     };
     var setContext = function(refContext) {
         this.instance.refContext = refContext;
@@ -38,4 +38,4 @@ CONVERTDRAWING.Emulator.prototype = {
     currentProcessType: "temp"
 };
 
-CONVERTDRAWING.Emulator.prototype = jQuery.extend(CONVERTDRAWING.Emulator.prototype, CONVERTDRAWING.Helper.prototype);
+CONVERTDRAWING.Emulator.prototype = _.extend(CONVERTDRAWING.Emulator.prototype, CONVERTDRAWING.Helper.prototype);

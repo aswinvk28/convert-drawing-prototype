@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+var SPLIT_TYPE_POINT = "point", SPLIT_TYPE_LINE = "line", SPLIT_TYPE_SLANT = "slant", SPLIT_TYPE_VERTEX = "vertex";
 var _WORKSPACE = _WORKSPACE || {};
 var CONVERTDRAWING = CONVERTDRAWING || {};
 var DOMSUPPORT = DOMSUPPORT || {};
