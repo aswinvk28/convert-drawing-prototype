@@ -16,7 +16,15 @@ Here's a video of the prototype created for Convert Drawing:
 
 ## Doors
 
-![](./video/door.png)
+![Door layout design](./video/door.png)
+
+The door design has been prepared based on a property that determines what changes when movement is from one room to another. It is a scale that completely lies in classification side. But All (A), Sine (S), Tan (T), Cos (C) is a determining technique to distinguish that property simply because it can be represented using the complex plane which is:
+
+```Javascript
+
+var xCoordinate = width * Math.cos(angle * Math.PI/180 + xAngleAppend), yCoordinate = width * Math.sin(angle * Math.PI/180 + yAngleAppend);
+
+```
 
 ## Walls
 
@@ -30,3 +38,10 @@ Here's a video of the prototype created for Convert Drawing:
 
 - Triple Enclosure
 
+Interface of the prototype app:
+
+![Interface](./interface-v1.jpg)
+
+## Design of the prototype
+
+The prototype is designed to work with browsers that support Javascript. The prototype uses the native library which enables light-weight javascript engines to load the prototype. 
